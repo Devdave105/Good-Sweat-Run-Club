@@ -3,237 +3,329 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Good Sweat Run Club, Uyo</title>
+  <title>Good Sweat Run Club Uyo</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- NAV -->
+  <!-- WHY SWEAT POP-OUT (fires on load) -->
+  <div class="sweat-backdrop" id="sweatBackdrop"></div>
+  <div class="sweat-modal" id="sweatModal" role="dialog" aria-modal="true" aria-labelledby="sweatTitle">
+    <div class="sweat-inner">
+      <button class="sweat-close" id="sweatClose" aria-label="Close">&times;</button>
+      <div class="sweat-head">
+        <span class="sweat-eyebrow">Your Body. Your City. Your Pace.</span>
+        <h2 class="sweat-heading" id="sweatTitle">Why You Need<br />to <em>Sweat.</em></h2>
+      </div>
+      <div class="sweat-reasons">
+        <div class="sweat-reason">
+          <span class="sweat-num">01</span>
+          <div class="sweat-reason-text">
+            <strong>Discipline compounds.</strong>
+            <p>One Saturday run becomes a habit. A habit becomes a transformation. Research shows 66 days builds a routine — we give you 500 people to make it stick.</p>
+          </div>
+        </div>
+        <div class="sweat-reason">
+          <span class="sweat-num">02</span>
+          <div class="sweat-reason-text">
+            <strong>Running rewires your mind.</strong>
+            <p>Every kilometre floods your brain with endorphins, reduces cortisol, and sharpens focus. The clarity after a run is not accidental — it is neurological.</p>
+          </div>
+        </div>
+        <div class="sweat-reason">
+          <span class="sweat-num">03</span>
+          <div class="sweat-reason-text">
+            <strong>Your city deserves your presence.</strong>
+            <p>Uyo is alive at 6 AM. The streets, the air, the pace — there is a version of this city most people never see. We show it to you every Saturday.</p>
+          </div>
+        </div>
+        <div class="sweat-reason">
+          <span class="sweat-num">04</span>
+          <div class="sweat-reason-text">
+            <strong>Community changes everything.</strong>
+            <p>500+ runners cannot all be wrong. Accountability, friendships, pace partners, shared goals — you do not just join a run club, you join a support system.</p>
+          </div>
+        </div>
+      </div>
+      <a href="#membership" class="btn btn-gold full-width sweat-cta" id="sweatJoinBtn">I Am Ready — Join the Club</a>
+      <p class="sweat-skip" id="sweatSkip">Not today, let me explore first</p>
+    </div>
+  </div>
+
+  <!-- NAVBAR -->
   <nav class="navbar" id="navbar">
     <div class="nav-container">
-      <a href="#" class="nav-logo">
-        <span class="logo-good">GOOD</span><span class="logo-sweat"> SWEAT</span>
-        <span class="logo-sub">RUN CLUB &mdash; UYO</span>
+      <a href="#home" class="nav-logo">
+        <div class="logo-mark"><span class="logo-gs-text">GS</span></div>
+        <div class="logo-wordmark">
+          <span class="logo-name">Good Sweat</span>
+          <span class="logo-sub">Run Club <em>Uyo</em></span>
+        </div>
       </a>
-      <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation menu" aria-expanded="false">
-        <span class="bar"></span>
-        <span class="bar"></span>
-        <span class="bar"></span>
-      </button>
-      <ul class="nav-links" id="navLinks">
+      <ul class="nav-links">
         <li><a href="#about" class="nav-link">About</a></li>
-        <li><a href="#mission" class="nav-link">Mission</a></li>
-        <li><a href="#structure" class="nav-link">Runs</a></li>
-        <li><a href="#team" class="nav-link">Team</a></li>
+        <li><a href="#runs" class="nav-link">Runs</a></li>
+        <li><a href="#events" class="nav-link">Events</a></li>
         <li><a href="#gallery" class="nav-link">Gallery</a></li>
-        <li><a href="#contact" class="nav-link nav-cta">Join Us</a></li>
+        <li><a href="#reviews" class="nav-link">Reviews</a></li>
+        <li><a href="#contact" class="nav-link">Contact</a></li>
       </ul>
+      <a href="#membership" class="btn btn-gold nav-cta">Join Now</a>
+      <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
+        <span class="ham-l"></span>
+        <span class="ham-l"></span>
+        <span class="ham-l"></span>
+      </button>
+    </div>
+
+    <!-- MOBILE DRAWER -->
+    <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+      <div class="mobile-inner">
+        <div class="mobile-head">
+          <a href="#home" class="nav-logo mobile-logo-link">
+            <div class="logo-mark logo-mark-lg"><span class="logo-gs-text">GS</span></div>
+            <div class="logo-wordmark">
+              <span class="logo-name">Good Sweat</span>
+              <span class="logo-sub">Run Club <em>Uyo</em></span>
+            </div>
+          </a>
+        </div>
+        <ul class="mobile-links">
+          <li><a href="#about" class="mobile-link">About</a></li>
+          <li><a href="#runs" class="mobile-link">Runs</a></li>
+          <li><a href="#events" class="mobile-link">Events</a></li>
+          <li><a href="#gallery" class="mobile-link">Gallery</a></li>
+          <li><a href="#reviews" class="mobile-link">Reviews</a></li>
+          <li><a href="#contact" class="mobile-link">Contact</a></li>
+        </ul>
+        <div class="mobile-foot">
+          <a href="#membership" class="btn btn-gold mobile-join-btn">Join the Club</a>
+          <div class="mobile-contact-row">
+            <span class="mobile-contact-label">Questions?</span>
+            <a href="tel:09032188849" class="mobile-contact-num">09032188849</a>
+          </div>
+        </div>
+      </div>
     </div>
   </nav>
 
-  <!-- NAV BACKDROP (mobile overlay) -->
-  <div class="nav-backdrop" id="navBackdrop"></div>
-
   <!-- HERO -->
-  <section class="hero" id="hero">
+  <section class="hero" id="home">
     <div class="hero-video-wrap">
       <video class="hero-video" autoplay muted loop playsinline>
         <source src="WhatsApp Video 2026-04-18 at 9.45.08 PM - Copy.mp4" type="video/mp4" />
-        <source src="https://videos.pexels.com/video-files/8445093/8445093-uhd_2560_1440_25fps.mp4" type="video/mp4" />
       </video>
       <div class="hero-overlay"></div>
     </div>
     <div class="hero-content">
-      <div class="hero-tag reveal-up">Uyo &bull; Akwa Ibom &bull; Nigeria</div>
-      <h1 class="hero-headline reveal-up delay-1">
-        Run Together.<br />Grow Stronger.
-      </h1>
-      <p class="hero-sub reveal-up delay-2">
-        More Than Fitness &mdash; A Community.
-      </p>
-      <p class="hero-desc reveal-up delay-3">
-        A community built on movement, discipline, and connection.<br class="br-hide" />
-        Join Uyo's most committed run club.
-      </p>
-      <div class="hero-btns reveal-up delay-4">
-        <a href="#contact" class="btn btn-primary">Join the Community</a>
-        <a href="#structure" class="btn btn-outline">View Schedule</a>
+      <p class="hero-eyebrow fade-up">Good Sweat Run Club — Uyo</p>
+      <h1 class="hero-headline fade-up delay-1">Run With Purpose.<br /><em>Grow With Community.</em></h1>
+      <p class="hero-sub fade-up delay-2">Join over 500+ runners in Uyo building consistency, health, and real human connection — one Saturday at a time.</p>
+      <div class="hero-ctas fade-up delay-3">
+        <a href="#membership" class="btn btn-gold">Join the Community</a>
+        <a href="#runs" class="btn btn-outline">View Run Locations</a>
+      </div>
+      <div class="hero-proof fade-up delay-4">
+        <div class="proof-avatars">
+          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&h=80&fit=crop&crop=face" alt="Member" class="avatar" />
+          <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=80&h=80&fit=crop&crop=face" alt="Member" class="avatar" />
+          <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=80&h=80&fit=crop&crop=face" alt="Member" class="avatar" />
+          <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=80&h=80&fit=crop&crop=face" alt="Member" class="avatar" />
+          <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80&h=80&fit=crop&crop=face" alt="Member" class="avatar" />
+        </div>
+        <div class="proof-words">
+          <p class="proof-count">500+ Active Runners</p>
+          <p class="proof-note">and growing every Saturday</p>
+        </div>
       </div>
     </div>
-    <div class="hero-scroll-indicator">
-      <div class="scroll-line"></div>
-      <span>Scroll</span>
-    </div>
+    <div class="hero-scroll-cue"><span></span></div>
   </section>
 
   <!-- ABOUT -->
   <section class="about section" id="about">
     <div class="container about-grid">
-      <div class="about-image-wrap reveal-left">
-        <div class="about-img-frame">
-          <img
-            src="image/about.jpeg"
-            alt="Runners in community"
-            class="about-img"
-          />
-          <div class="about-img-badge">
-            <span class="badge-num">Est.</span>
-            <span class="badge-year">2022</span>
-          </div>
-        </div>
-      </div>
-      <div class="about-text reveal-right">
-        <span class="section-label">Who We Are</span>
-        <h2 class="section-title">Built Around<br /><em>Movement &amp; Purpose</em></h2>
-        <p class="about-body">
-          This is a community built around movement, consistency, and connection.
-          We run to stay active, improve ourselves, and support one another
-          regardless of pace or experience level.
-        </p>
-        <p class="about-body">
-          Whether you are stepping out for the first time or chasing a personal
-          record, Good Sweat Run Club welcomes you. We believe every stride
-          forward is a stride together.
-        </p>
+      <div class="about-text reveal">
+        <p class="section-eyebrow">Who We Are</p>
+        <h2 class="section-title">More Than a Run.<br /><em>It's a Movement.</em></h2>
+        <p class="about-body">Good Sweat Run Club Uyo was built on a simple truth — running is exponentially better with others. We are a community of everyday athletes, ambitious beginners, and lifelong movers united by purpose, discipline, and the spirit of Uyo.</p>
+        <p class="about-body">Every Saturday morning we lace up, show up, and push forward together. No gatekeeping. No judgment. Just movement, accountability, and the kind of connection that turns strangers into family.</p>
         <div class="about-stats">
-          <div class="stat">
-            <span class="stat-num" data-target="500">0</span><span class="stat-plus">+</span>
-            <span class="stat-label">Members</span>
-          </div>
-          <div class="stat">
-            <span class="stat-num" data-target="45">0</span><span class="stat-plus">KM</span>
-            <span class="stat-label">Next Mission</span>
-          </div>
-          <div class="stat">
-            <span class="stat-num" data-target="12">0</span><span class="stat-plus">+</span>
-            <span class="stat-label">Monthly Runs</span>
-          </div>
+          <div class="stat reveal"><span class="stat-num">500+</span><span class="stat-label">Active Members</span></div>
+          <div class="stat reveal delay-1"><span class="stat-num">4+</span><span class="stat-label">Locations</span></div>
+          <div class="stat reveal delay-2"><span class="stat-num">52</span><span class="stat-label">Saturdays a Year</span></div>
         </div>
       </div>
-    </div>
-  </section>
-
-  <!-- MISSION HIGHLIGHT -->
-  <section class="mission section" id="mission">
-    <div class="mission-bg-parallax"></div>
-    <div class="mission-overlay"></div>
-    <div class="container mission-content">
-      <span class="section-label light reveal-up">What Drives Us</span>
-      <h2 class="mission-headline reveal-up delay-1">Our Next<br /><span class="gold">Mission</span></h2>
-      <div class="mission-distance reveal-up delay-2">
-        <span class="dist-num">45</span><span class="dist-unit">KM</span>
+      <div class="about-image reveal delay-1">
+        <div class="about-img-frame">
+          <img src="image/about.jpeg" alt="Runners in community" />
+        </div>
+        <div class="about-badge">
+          <span>Est.</span>
+          <span>Uyo</span>
+        </div>
+        <p class="about-img-caption">Every Saturday. Without excuse.</p>
       </div>
-      <p class="mission-name reveal-up delay-3">Uyo Community Run</p>
-      <p class="mission-sub reveal-up delay-4">Be part of something bigger than yourself</p>
-      <a href="#contact" class="btn btn-primary reveal-up delay-5">Secure Your Spot</a>
     </div>
   </section>
 
-  <!-- RUN STRUCTURE -->
-  <section class="structure section" id="structure">
+  <!-- IMAGE TICKER -->
+  <div class="ticker-section" aria-hidden="true">
+    <div class="ticker-label-strip">Good Sweat Run Club &nbsp;&nbsp;—&nbsp;&nbsp; Uyo, Nigeria &nbsp;&nbsp;—&nbsp;&nbsp; Every Saturday &nbsp;&nbsp;—&nbsp;&nbsp; Good Sweat Run Club &nbsp;&nbsp;—&nbsp;&nbsp; Uyo, Nigeria &nbsp;&nbsp;—&nbsp;&nbsp; Every Saturday</div>
+    <div class="ticker-track">
+      <div class="ticker-inner">
+        <img src="image/t1.jpeg" alt="Run" />
+        <img src="image/t2.jpeg" alt="Run" />
+        <img src="image/t3.jpeg" alt="Run" />
+        <img src="image/t5.jpeg" alt="Run" />
+        <img src="image/t6.jpeg" alt="Run" />
+        <img src="image/t7.jpeg" alt="Run" />
+        <img src="image/t8.jpeg" alt="Run" />
+        <img src="image/tt4.jpeg" alt="Run" />
+        <img src="https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=480&h=300&fit=crop" alt="Run" />
+        <img src="https://images.unsplash.com/photo-1571008887538-b36bb32f4571?w=480&h=300&fit=crop" alt="Run" />
+        <img src="https://images.unsplash.com/photo-1594882645126-14ac19a3b2c0?w=480&h=300&fit=crop" alt="Run" />
+        <img src="https://images.unsplash.com/photo-1502904550040-7534597429ae?w=480&h=300&fit=crop" alt="Run" />
+      </div>
+    </div>
+  </div>
+
+  <!-- RUNS & LOCATIONS -->
+  <section class="runs section" id="runs">
     <div class="container">
-      <div class="section-header reveal-up">
-        <span class="section-label">How We Run</span>
-        <h2 class="section-title">Run Structure</h2>
+      <div class="section-header reveal">
+        <p class="section-eyebrow">Every Saturday</p>
+        <h2 class="section-title">Find Your Crew.<br />Pick Your Location.</h2>
+        <p class="section-sub">We run across multiple locations every Saturday morning. The last Saturday of each month is our grand community run — all crews unite at Ibom Plaza.</p>
       </div>
-      <div class="structure-grid">
-        <div class="structure-card reveal-up delay-1">
-          <div class="card-number">01</div>
-          <div class="card-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <circle cx="12" cy="12" r="10"/>
-              <path d="M12 6v6l4 2"/>
-            </svg>
-          </div>
-          <h3 class="card-title">Community Run</h3>
-          <p class="card-freq">Every Last Saturday of the Month</p>
-          <p class="card-body">
-            All locations unite for one major run. The signature event that brings
-            the entire Good Sweat family together — unified pace, unified energy.
-          </p>
-          <div class="card-tag">All Locations</div>
+      <div class="location-cards" id="locationCards">
+        <div class="location-card reveal">
+          <div class="card-bar"></div>
+          <h3 class="card-name">Uyo City Center</h3>
+          <p class="card-lead">Team Lead: <strong>Chukwuemeka O.</strong></p>
+          <p class="card-time">6:00 AM — Every Saturday</p>
+          <button class="btn btn-outline card-btn" data-location="Uyo City Center">Join This Location</button>
         </div>
-        <div class="structure-card reveal-up delay-2">
-          <div class="card-number">02</div>
-          <div class="card-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-              <circle cx="9" cy="7" r="4"/>
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
-            </svg>
+        <div class="location-card featured reveal delay-1">
+          <div class="card-bar"></div>
+          <span class="card-badge">Main Run</span>
+          <h3 class="card-name">Ibom Plaza</h3>
+          <p class="card-lead">Team Lead: <strong>Nkechi A.</strong></p>
+          <p class="card-time">6:00 AM — Last Saturday</p>
+          <button class="btn btn-gold card-btn" data-location="Ibom Plaza">Join This Location</button>
+        </div>
+        <div class="location-card reveal delay-2">
+          <div class="card-bar"></div>
+          <h3 class="card-name">Use Offot</h3>
+          <p class="card-lead">Team Lead: <strong>Bassey E.</strong></p>
+          <p class="card-time">6:30 AM — Every Saturday</p>
+          <button class="btn btn-outline card-btn" data-location="Use Offot">Join This Location</button>
+        </div>
+        <div class="location-card hidden-card" style="display:none;">
+          <div class="card-bar"></div>
+          <h3 class="card-name">Ewet Housing</h3>
+          <p class="card-lead">Team Lead: <strong>Aniekan U.</strong></p>
+          <p class="card-time">6:00 AM — Every Saturday</p>
+          <button class="btn btn-outline card-btn" data-location="Ewet Housing">Join This Location</button>
+        </div>
+      </div>
+      <div class="runs-more-cta reveal">
+        <button class="btn btn-outline" id="seeAllLocationsBtn">View All Locations</button>
+      </div>
+    </div>
+
+    <!-- Location form overlay -->
+    <div class="loc-overlay" id="locOverlay">
+      <div class="loc-box">
+        <button class="loc-close" id="locClose" aria-label="Close form">&times;</button>
+        <p class="section-eyebrow">Saturday Run</p>
+        <h3 class="loc-title">Join <span id="formLocName" class="gold">a Location</span></h3>
+        <form id="locationForm" class="loc-form" novalidate>
+          <div class="form-group">
+            <label for="locName">Full Name</label>
+            <input type="text" id="locName" name="name" placeholder="Your full name" required />
           </div>
-          <h3 class="card-title">Local Group Runs</h3>
-          <p class="card-freq">Weekly Across Locations</p>
-          <p class="card-body">
-            Weekly runs across different locations in Uyo. The foundation of
-            accountability and consistency. Your local crew keeps you moving forward.
-          </p>
-          <div class="card-tag">Multiple Zones</div>
+          <div class="form-group">
+            <label for="locPhone">Phone Number</label>
+            <input type="tel" id="locPhone" name="phone" placeholder="+234 000 000 0000" required />
+          </div>
+          <input type="hidden" id="locHidden" name="location" />
+          <button type="submit" class="btn btn-gold full-width">Send via WhatsApp</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- EVENTS -->
+  <section class="events section" id="events">
+    <div class="container">
+      <div class="event-card reveal">
+        <div class="event-left">
+          <p class="section-eyebrow">Upcoming Event</p>
+          <h2 class="event-title">Good Sweat<br />May Run 2026</h2>
+          <p class="event-desc">Our biggest Community Run of  May. Every runner, every location, one city. A high-energy community race through the heart of Uyo — complete with prizes, refreshments, and memories that will last a lifetime.</p>
+          <div class="event-meta">
+            <div class="event-meta-row"><span class="meta-lbl">Date</span><span class="meta-val">Saturday, May 30, 2026</span></div>
+            <div class="event-meta-row"><span class="meta-lbl">Time</span><span class="meta-val">5:45 AM</span></div>
+            <div class="event-meta-row"><span class="meta-lbl">Venue</span><span class="meta-val">Pharmaplaze, Uyo</span></div>
+          </div>
+          <a href="https://event.getbookt.io/good-sweat-run-club-uyo-2168?utm_source=ig&utm_medium=social&utm_content=link_in_bio&fbclid=PAdGRleARRh15leHRuA2FlbQIxMQBzcnRjBmFwcF9pZA8xMjQwMjQ1NzQyODc0MTQAAaeFJWrCM4-8Z0fpve7YvMcEuZmsR_RovGV7GszYsepezTHYLQYhzdvdvKJ_jg_aem_5TB49Ka0EJDdUYdUeHBesg" target="_blank" rel="noopener" class="btn btn-gold">Secure Your Spot</a>
+        </div>
+        <div class="event-right">
+          <img src="image/next.jpeg" alt="Annual Run Event" />
+          <div class="event-img-tint"></div>
+          <div class="event-date-pill">May 30</div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- TEAM & VOLUNTEER -->
-  <section class="team section" id="team">
+  <!-- VOLUNTEER -->
+  <section class="volunteer" id="volunteer">
+    <div class="volunteer-bg">
+      <img src="image/bkkkkkkk.jpeg" alt="Volunteer" />
+      <div class="volunteer-tint"></div>
+    </div>
+    <div class="container volunteer-content reveal">
+      <p class="section-eyebrow light">Give Back</p>
+      <h2 class="volunteer-title">Be the Energy<br />Behind the Run.</h2>
+      <p class="volunteer-sub">Volunteers are the invisible heartbeat of Good Sweat. Lead pace groups, manage logistics, handle photography, or mentor new runners. Your energy shapes this community from the inside out.</p>
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSfbjQI-0tpWXdX1_9E77yKEJXG0-IgodTBLxLtu7K_LyGjUSg/viewform?fbclid=PAdGRleARRiAlleHRuA2FlbQIxMQBzcnRjBmFwcF9pZA8xMjQwMjQ1NzQyODc0MTQAAaciAmUalF1B6H7-nqxX16EP7KtD-hzjCQW8WXnjuiPWIMkQ6g8oD35CTcZLyA_aem_GMecoNHP5Nd9EoVMRguvmw" target="_blank" rel="noopener" class="btn btn-gold">Apply as Volunteer</a>
+    </div>
+  </section>
+
+  <!-- VIDEOS -->
+  <section class="videos section" id="videos">
     <div class="container">
-      <div class="section-header reveal-up">
-        <span class="section-label">The People Behind the Run</span>
-        <h2 class="section-title">Our Volunteer Teams</h2>
+      <div class="section-header reveal">
+        <p class="section-eyebrow">In Motion</p>
+        <h2 class="section-title">Feel the Energy.</h2>
+        <p class="section-sub">This is what Saturday mornings look like when 500 people decide to move together.</p>
       </div>
-      <div class="team-grid">
-        <div class="team-card reveal-up delay-1">
-          <div class="team-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
-            </svg>
-          </div>
-          <h3>Medical Team</h3>
-          <p>Ensuring the safety and well-being of every runner throughout the course.</p>
+      <div class="video-grid reveal">
+        <div class="video-item v-tall">
+          <video muted loop playsinline preload="metadata"><source src="vidoe/vv1.mp4" type="video/mp4" /></video>
+          <div class="video-cover"><div class="vplay-btn"><svg viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21" fill="#D4AF37"/></svg></div></div>
         </div>
-        <div class="team-card reveal-up delay-2">
-          <div class="team-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/>
-              <line x1="7" y1="2" x2="7" y2="22"/>
-              <line x1="17" y1="2" x2="17" y2="22"/>
-              <line x1="2" y1="12" x2="22" y2="12"/>
-              <line x1="2" y1="7" x2="7" y2="7"/>
-              <line x1="2" y1="17" x2="7" y2="17"/>
-              <line x1="17" y1="17" x2="22" y2="17"/>
-              <line x1="17" y1="7" x2="22" y2="7"/>
-            </svg>
-          </div>
-          <h3>Content Team</h3>
-          <p>Capturing every moment — the sweat, the smiles, and the stories worth telling.</p>
+        <div class="video-item">
+          <video muted loop playsinline preload="metadata"><source src="vidoe/v33.mp4" type="video/mp4" /></video>
+          <div class="video-cover"><div class="vplay-btn"><svg viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21" fill="#D4AF37"/></svg></div></div>
         </div>
-        <div class="team-card reveal-up delay-3">
-          <div class="team-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"/>
-              <line x1="12" y1="22" x2="12" y2="15.5"/>
-              <polyline points="22 8.5 12 15.5 2 8.5"/>
-            </svg>
-          </div>
-          <h3>Road Marshals</h3>
-          <p>Coordinating route safety and guiding every runner along the course.</p>
+        <div class="video-item">
+          <video muted loop playsinline preload="metadata"><source src="vidoe/v22.mp4" type="video/mp4" /></video>
+          <div class="video-cover"><div class="vplay-btn"><svg viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21" fill="#D4AF37"/></svg></div></div>
         </div>
-        <div class="team-card reveal-up delay-4">
-          <div class="team-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-            </svg>
-          </div>
-          <h3>Water Support Team</h3>
-          <p>Keeping every runner hydrated and supported from start to finish line.</p>
+        <div class="video-item v-wide">
+          <video muted loop playsinline preload="metadata"><source src="vidoe/vii5.mp4" type="video/mp4" /></video>
+          <div class="video-cover"><div class="vplay-btn"><svg viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21" fill="#D4AF37"/></svg></div></div>
         </div>
-      </div>
-      <div class="team-cta reveal-up">
-        <p>Interested in volunteering? Join a team and make an impact.</p>
-        <a href="#contact" class="btn btn-outline">Get Involved</a>
+        <div class="video-item">
+          <video muted loop playsinline preload="metadata"><source src="vidoe/v77.mp4" type="video/mp4" /></video>
+          <div class="video-cover"><div class="vplay-btn"><svg viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21" fill="#D4AF37"/></svg></div></div>
+        </div>
       </div>
     </div>
   </section>
@@ -241,197 +333,225 @@
   <!-- GALLERY -->
   <section class="gallery section" id="gallery">
     <div class="container">
-      <div class="section-header reveal-up">
-        <span class="section-label">In Motion</span>
-        <h2 class="section-title">The Run in Pictures</h2>
+      <div class="section-header reveal">
+        <p class="section-eyebrow">Moments</p>
+        <h2 class="section-title">We Run. We Capture.<br />We Remember.</h2>
       </div>
-      <div class="gallery-grid">
-        <div class="gallery-item reveal-scale" style="--delay:0.1s">
-          <img src="image/t1.jpeg" alt="Community run" />
-          <div class="gallery-overlay"><span>Run Together</span></div>
-        </div>
-        <div class="gallery-item gallery-tall reveal-scale" style="--delay:0.2s">
-          <img src="image/tt2.jpeg" alt="Team energy" />
-          <div class="gallery-overlay"><span>Team Energy</span></div>
-        </div>
-        <div class="gallery-item reveal-scale" style="--delay:0.3s">
-          <img src="image/about.jpeg" alt="Runners" />
-          <div class="gallery-overlay"><span>Every Stride</span></div>
-        </div>
-        <div class="gallery-item gallery-wide reveal-scale" style="--delay:0.4s">
-          <img src="image/tt4.jpeg" alt="Group run" />
-          <div class="gallery-overlay"><span>Movement</span></div>
-        </div>
-        <div class="gallery-item reveal-scale" style="--delay:0.5s">
-          <img src="image/t5.jpeg" alt="Running community" />
-          <div class="gallery-overlay"><span>Connection</span></div>
-        </div>
-        <div class="gallery-item reveal-scale" style="--delay:0.6s">
-          <img src="image/t6.jpeg" alt="Sweat and discipline" />
-          <div class="gallery-overlay"><span>Discipline</span></div>
-        </div>
-        <div class="gallery-item gallery-tall reveal-scale" style="--delay:0.7s">
-          <img src="image/t7.jpeg" alt="Race moment" />
-          <div class="gallery-overlay"><span>Push Forward</span></div>
-        </div>
-        <div class="gallery-item reveal-scale" style="--delay:0.8s">
-          <img src="image/t8.jpeg" alt="Finish line" />
-          <div class="gallery-overlay"><span>Finish Strong</span></div>
-        </div>
+      <div class="gallery-grid reveal">
+        <div class="gallery-item g-tall"><img src="image/bkkkkkkk.jpeg" alt="Run" loading="lazy" /><div class="g-hover"><span>Good Sweat</span></div></div>
+        <div class="gallery-item"><img src="image/b2.jpeg" alt="Run" loading="lazy" /><div class="g-hover"><span>Community Run</span></div></div>
+        <div class="gallery-item"><img src="image/b3.jpeg" alt="Run" loading="lazy" /><div class="g-hover"><span>Saturday Vibes</span></div></div>
+        <div class="gallery-item g-wide"><img src="image/b4.jpeg" alt="Run" loading="lazy" /><div class="g-hover"><span>Main Run Day</span></div></div>
+        <div class="gallery-item"><img src="image/b5.jpeg" alt="Run" loading="lazy" /><div class="g-hover"><span>Finish Line</span></div></div>
+        <div class="gallery-item"><img src="image/b6.jpeg" alt="Run" loading="lazy" /><div class="g-hover"><span>Pace Group</span></div></div>
+        <div class="gallery-item"><img src="image/t2.jpeg" alt="Run" loading="lazy" /><div class="g-hover"><span>Community</span></div></div>
+        <div class="gallery-item"><img src="image/t7.jpeg" alt="Run" loading="lazy" /><div class="g-hover"><span>Early Mornings</span></div></div>
       </div>
     </div>
   </section>
 
-  <!-- SECOND VIDEO SECTION -->
-  <section class="video2 section" id="video2">
-    <div class="hero-video-wrap">
-      <video class="hero-video" autoplay muted loop playsinline>
-        <source src="https://cdn.pixabay.com/video/2022/05/25/118782-715491138_large.mp4" type="video/mp4" />
-        <source src="https://videos.pexels.com/video-files/6740380/6740380-uhd_2560_1440_30fps.mp4" type="video/mp4" />
-      </video>
-      <div class="hero-overlay"></div>
-    </div>
-    <div class="video2-content container">
-      <h2 class="video2-headline reveal-up">Feel the Energy.<br /><span class="gold">Experience the Movement.</span></h2>
-      <p class="video2-sub reveal-up delay-1">This is more than running.</p>
-    </div>
-  </section>
-
-  <!-- COMMUNITY VALUES -->
-  <section class="values section" id="values">
+  <!-- REVIEWS — 3 visible, 5 hidden -->
+  <section class="reviews section" id="reviews">
     <div class="container">
-      <div class="section-header reveal-up">
-        <span class="section-label">What We Stand For</span>
-        <h2 class="section-title">Our Community Values</h2>
+      <div class="section-header reveal">
+        <p class="section-eyebrow">Testimonials</p>
+        <h2 class="section-title">What Our Runners Say.</h2>
+        <p class="section-sub">Real words from real members who showed up and never looked back.</p>
       </div>
-      <div class="values-list">
-        <div class="value-item reveal-up delay-1">
-          <div class="value-line"></div>
-          <div class="value-num">01</div>
-          <div class="value-text">
-            <h3>Fitness &amp; Healthy Living</h3>
-            <p>Movement is medicine. We champion a lifestyle that prioritizes physical well-being and longevity.</p>
+      <div class="reviews-grid" id="reviewsGrid">
+        <div class="review-card reveal">
+          <span class="rqm">"</span>
+          <p class="review-text">Good Sweat changed my life. I came as a beginner who could barely run 2km. A year later I have completed multiple 10Ks and made friendships I will keep forever.</p>
+          <div class="review-foot">
+            <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=80&h=80&fit=crop&crop=face" alt="Amara" />
+            <div><strong>Amara Udoh</strong><span>Member since 2023</span></div>
+            <div class="rstars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
           </div>
         </div>
-        <div class="value-item reveal-up delay-2">
-          <div class="value-line"></div>
-          <div class="value-num">02</div>
-          <div class="value-text">
-            <h3>Accountability &amp; Consistency</h3>
-            <p>We show up — rain or shine. The habit of showing up is what separates good intentions from real transformation.</p>
+        <div class="review-card reveal delay-1">
+          <span class="rqm">"</span>
+          <p class="review-text">The community is unlike anything I have experienced. The team leads are incredible, the energy on Saturdays is electric, and every run feels like a celebration of being alive.</p>
+          <div class="review-foot">
+            <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=80&h=80&fit=crop&crop=face" alt="Emeka" />
+            <div><strong>Emeka Okafor</strong><span>Member since 2022</span></div>
+            <div class="rstars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
           </div>
         </div>
-        <div class="value-item reveal-up delay-3">
-          <div class="value-line"></div>
-          <div class="value-num">03</div>
-          <div class="value-text">
-            <h3>Positive Energy &amp; Teamwork</h3>
-            <p>Every run is elevated by the people around you. We lift each other up, celebrate every pace, and run as one.</p>
+        <div class="review-card reveal delay-2">
+          <span class="rqm">"</span>
+          <p class="review-text">I tried solo running for years. Good Sweat showed me what accountability and community can actually do. My pace improved 20% in 3 months and my mindset shifted completely.</p>
+          <div class="review-foot">
+            <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=80&h=80&fit=crop&crop=face" alt="Blessing" />
+            <div><strong>Blessing Etim</strong><span>Member since 2024</span></div>
+            <div class="rstars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
           </div>
         </div>
-        <div class="value-item reveal-up delay-4">
-          <div class="value-line"></div>
-          <div class="value-num">04</div>
-          <div class="value-text">
-            <h3>Real Human Connection Through Movement</h3>
-            <p>Beyond the miles, we build bonds. This club is a place where strangers become teammates and teammates become family.</p>
-          </div>
+        <!-- 5 hidden -->
+        <div class="review-card hidden-review" style="display:none;">
+          <span class="rqm">"</span>
+          <p class="review-text">Running with Good Sweat is the highlight of my week. I have lost 15kg, found accountability partners, and discovered a version of myself I never knew existed.</p>
+          <div class="review-foot"><img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&h=80&fit=crop&crop=face" alt="Kemi" /><div><strong>Kemi Bassey</strong><span>Member since 2023</span></div><div class="rstars">&#9733;&#9733;&#9733;&#9733;&#9733;</div></div>
+        </div>
+        <div class="review-card hidden-review" style="display:none;">
+          <span class="rqm">"</span>
+          <p class="review-text">What started as a fitness goal became a lifestyle. The Saturday runs are something I plan my whole week around. Good Sweat is not a run club, it is family.</p>
+          <div class="review-foot"><img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80&h=80&fit=crop&crop=face" alt="Daniel" /><div><strong>Daniel Udo</strong><span>Member since 2022</span></div><div class="rstars">&#9733;&#9733;&#9733;&#9733;&#9733;</div></div>
+        </div>
+        <div class="review-card hidden-review" style="display:none;">
+          <span class="rqm">"</span>
+          <p class="review-text">As someone who moved to Uyo recently, Good Sweat helped me find my people. It is a genuine, warm, and deeply motivating community that I am proud to be part of.</p>
+          <div class="review-foot"><img src="https://images.unsplash.com/photo-1598966739654-5e9a252d8c32?w=80&h=80&fit=crop&crop=face" alt="Ifeoma" /><div><strong>Ifeoma Nwosu</strong><span>Member since 2024</span></div><div class="rstars">&#9733;&#9733;&#9733;&#9733;&#9733;</div></div>
+        </div>
+        <div class="review-card hidden-review" style="display:none;">
+          <span class="rqm">"</span>
+          <p class="review-text">The structure, discipline, and fun — Good Sweat gets the balance exactly right. You feel pushed but never alone. This is what fitness communities should feel like.</p>
+          <div class="review-foot"><img src="https://images.unsplash.com/photo-1488161628813-04466f872be2?w=80&h=80&fit=crop&crop=face" alt="Samuel" /><div><strong>Samuel Akpan</strong><span>Member since 2023</span></div><div class="rstars">&#9733;&#9733;&#9733;&#9733;&#9733;</div></div>
+        </div>
+        <div class="review-card hidden-review" style="display:none;">
+          <span class="rqm">"</span>
+          <p class="review-text">Good Sweat gave me a reason to wake up at 5 AM and actually look forward to it. I have never been in better shape, and I have never felt more connected to this city.</p>
+          <div class="review-foot"><img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&h=80&fit=crop&crop=face" alt="Chidinma" /><div><strong>Chidinma Eze</strong><span>Member since 2024</span></div><div class="rstars">&#9733;&#9733;&#9733;&#9733;&#9733;</div></div>
         </div>
       </div>
+      <div class="reviews-more reveal"><button class="btn btn-outline" id="seeMoreBtn">See More Reviews</button></div>
     </div>
   </section>
 
-  <!-- CONTACT / JOIN -->
-  <section class="contact section" id="contact">
-    <div class="container contact-grid">
-      <div class="contact-text reveal-left">
-        <span class="section-label">Ready to Run?</span>
-        <h2 class="section-title">Join the Movement<br /><span class="gold">Today</span></h2>
-        <p class="contact-body">
-          Whether you are a seasoned runner or just lacing up for the first time,
-          there is a place for you at Good Sweat Run Club. Take the first step.
-        </p>
-        <div class="contact-details">
-          <div class="contact-item">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 6 6l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.6 16z"/>
-            </svg>
-            <span>0903288849</span>
-          </div>
-          <div class="contact-item">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-              <circle cx="12" cy="10" r="3"/>
-            </svg>
-            <span>Uyo, Akwa Ibom State, Nigeria</span>
-          </div>
-        </div>
-        <a
-          href="https://wa.me/2340903288849?text=Hello!%20I'd%20like%20to%20join%20Good%20Sweat%20Run%20Club%20Uyo."
-          class="btn btn-whatsapp"
-          target="_blank"
-          rel="noopener"
-        >
-          <svg viewBox="0 0 24 24" fill="currentColor">
-            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/>
-          </svg>
-          Chat on WhatsApp
-        </a>
+  <!-- RULES -->
+  <section class="rules-section section" id="rules">
+    <div class="container rules-wrap reveal">
+      <div>
+        <p class="section-eyebrow">Community Standards</p>
+        <h2 class="section-title">We Run by a Code.</h2>
+        <p class="section-sub">Every member upholds the standards that make Good Sweat exceptional. Read our guidelines before joining.</p>
       </div>
-      <div class="contact-form-wrap reveal-right">
-        <form class="contact-form" id="contactForm">
-          <h3>Send Us a Message</h3>
+      <button class="btn btn-gold" id="openRulesBtn">View Rules and Guidelines</button>
+    </div>
+  </section>
+
+  <!-- RULES MODAL -->
+  <div class="modal-backdrop" id="rulesModal" role="dialog" aria-modal="true" aria-labelledby="rmTitle">
+    <div class="modal-box">
+      <button class="modal-close" id="closeModal" aria-label="Close">&times;</button>
+      <h2 class="modal-title" id="rmTitle">Rules &amp; Guidelines</h2>
+      <p class="modal-sub">Please read carefully before joining Good Sweat Run Club Uyo.</p>
+      <ol class="rules-list">
+        <li>Arrive at least 10 minutes before the scheduled run start — lateness disrupts the entire group.</li>
+        <li>Respect all pace groups. Never pressure another member to run faster or slower than their ability.</li>
+        <li>Proper running attire is required. No jeans, dress shoes, or inappropriate clothing at any run.</li>
+        <li>No harassment, discrimination, or disrespectful conduct toward any member or the public at any time.</li>
+        <li>Stay on the designated run route unless redirected by a team lead.</li>
+        <li>You are responsible for your own health and safety. Run within your personal limits always.</li>
+        <li>Follow all instructions from team leads and run coordinators without argument during the run.</li>
+        <li>Photography is encouraged but always get consent before photographing others.</li>
+        <li>Do not litter. Help us keep the streets of Uyo clean and beautiful.</li>
+        <li>Members who consistently disrupt the community will be removed after a fair warning.</li>
+        <li>Stay hydrated. Always bring water especially for distances beyond 5km.</li>
+        <li>In the event of an injury, stop immediately and alert your nearest team lead.</li>
+      </ol>
+      <label class="agree-label">
+        <input type="checkbox" id="agreeCheck" />
+        <span>I have read and agree to the Good Sweat Run Club Uyo guidelines.</span>
+      </label>
+      <button class="btn btn-gold full-width mt-24" id="continueBtn" disabled>I Agree — Continue</button>
+    </div>
+  </div>
+
+  <!-- MEMBERSHIP -->
+  <section class="membership section" id="membership">
+    <div class="container">
+      <div class="section-header reveal">
+        <p class="section-eyebrow">Become a Member</p>
+        <h2 class="section-title">Your First Step<br />Starts Here.</h2>
+        <p class="section-sub">Fill in your details and we will connect you with the right crew. We will reach out within 24 hours.</p>
+      </div>
+      <div class="membership-wrap reveal">
+        <form class="membership-form" id="membershipForm" novalidate>
           <div class="form-group">
-            <input type="text" placeholder="Your Full Name" required />
+            <label for="memName">Full Name</label>
+            <input type="text" id="memName" name="name" placeholder="Your full name" required />
           </div>
           <div class="form-group">
-            <input type="tel" placeholder="Phone Number" required />
+            <label for="memPhone">Phone Number</label>
+            <input type="tel" id="memPhone" name="phone" placeholder="+234 000 000 0000" required />
           </div>
           <div class="form-group">
-            <select>
-              <option value="" disabled selected>How did you hear about us?</option>
-              <option>Social Media</option>
-              <option>Friend or Family</option>
-              <option>Community Event</option>
-              <option>Other</option>
+            <label for="memLevel">Experience Level</label>
+            <select id="memLevel" name="level" required>
+              <option value="" disabled selected>Select your level</option>
+              <option value="Beginner">Beginner — just starting out</option>
+              <option value="Intermediate">Intermediate — run regularly</option>
+              <option value="Advanced">Advanced — competitive runner</option>
             </select>
           </div>
           <div class="form-group">
-            <textarea placeholder="Your message (optional)" rows="4"></textarea>
+            <label for="memLocation">Preferred Location</label>
+            <select id="memLocation" name="location" required>
+              <option value="" disabled selected>Choose a location</option>
+              <option value="Uyo City Center">Uyo City Center</option>
+              <option value="Ibom Plaza">Ibom Plaza (Main Run)</option>
+              <option value="Use Offot">Use Offot</option>
+              <option value="Ewet Housing">Ewet Housing</option>
+            </select>
           </div>
-          <button type="submit" class="btn btn-primary full-width">Join the Club</button>
+          <p class="form-notice">We will contact you within 24 hours of submitting this form.</p>
+          <button type="submit" class="btn btn-gold full-width">Join Good Sweat — via WhatsApp</button>
         </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="contact section" id="contact">
+    <div class="container contact-grid reveal">
+      <div class="contact-left">
+        <p class="section-eyebrow">Get in Touch</p>
+        <h2 class="section-title">We'd Love to<br />Hear From You.</h2>
+        <p class="contact-desc">Questions about joining, volunteering, partnerships, or sponsorship? Reach out directly — a real person responds.</p>
+      </div>
+      <div class="contact-right">
+        <div class="contact-block"><span class="clbl">Phone</span><a href="tel:09032188849" class="cval clink">09032188849</a></div>
+        <div class="contact-block"><span class="clbl">WhatsApp</span><a href="https://wa.me/2349032188849" target="_blank" rel="noopener" class="cval clink">Chat on WhatsApp</a></div>
+        <div class="contact-block"><span class="clbl">Based In</span><span class="cval">Uyo, Akwa Ibom State, Nigeria</span></div>
+        <div class="contact-block"><span class="clbl">Run Days</span><span class="cval">Every Saturday — 6:00 AM</span></div>
       </div>
     </div>
   </section>
 
   <!-- FOOTER -->
   <footer class="footer">
-    <div class="container footer-inner">
-      <div class="footer-brand">
-        <div class="footer-logo">
-          <span class="logo-good">GOOD</span><span class="logo-sweat"> SWEAT</span>
-          <span class="logo-sub">RUN CLUB &mdash; UYO</span>
-        </div>
-        <p class="footer-tagline">Run. Connect. Grow.</p>
+    <div class="container">
+      <div class="footer-top">
+        <a href="#home" class="nav-logo">
+          <div class="logo-mark"><span class="logo-gs-text">GS</span></div>
+          <div class="logo-wordmark">
+            <span class="logo-name">Good Sweat</span>
+            <span class="logo-sub">Run Club <em>Uyo</em></span>
+          </div>
+        </a>
+        <p class="footer-tagline">Run With Purpose. Grow With Community.</p>
+        <nav class="footer-nav">
+          <a href="#about">About</a>
+          <a href="#runs">Runs</a>
+          <a href="#events">Events</a>
+          <a href="#gallery">Gallery</a>
+          <a href="#membership">Join</a>
+          <a href="#contact">Contact</a>
+        </nav>
       </div>
-      <div class="footer-links">
-        <a href="#about">About</a>
-        <a href="#mission">Mission</a>
-        <a href="#structure">Runs</a>
-        <a href="#team">Team</a>
-        <a href="#gallery">Gallery</a>
-        <a href="#contact">Join</a>
+      <div class="footer-bottom">
+        <p class="footer-copy">&copy; 2025 Good Sweat Run Club Uyo. All rights reserved.</p>
+        <a href="tel:09032188849" class="footer-phone">09032188849</a>
       </div>
-      <div class="footer-contact">
-        <span>0903288849</span>
-        <span>Uyo, Akwa Ibom</span>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <p>&copy; 2025 Good Sweat Run Club, Uyo. All rights reserved.</p>
     </div>
   </footer>
+
+  <!-- BACK TO TOP -->
+  <button class="back-to-top" id="backToTop" aria-label="Back to top">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 19V5M5 12l7-7 7 7" stroke="#0B0B0B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
 
   <script src="script.js"></script>
 </body>
