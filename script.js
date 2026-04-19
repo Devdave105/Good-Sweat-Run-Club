@@ -1,358 +1,403 @@
-/* ========================================================
-   GOOD SWEAT RUN CLUB UYO — script.js  v2
-   Modules: SweatModal | Navbar | Hamburger | SmoothScroll |
-            ScrollReveal | BackToTop | Ticker | Videos |
-            LocationForm | MembershipForm | Reviews |
-            RulesModal | LocationExpand
-======================================================== */
+/* ================================================================
+   GOOD SWEAT RUN CLUB UYO — script.js v4
+   Modular · Lazy video loading · Why-Sweat modal at 3 min
+================================================================ */
 (function () {
   'use strict';
 
-  const WA = '2349032188849';
+  const WA   = '2349032188849';
+  const $    = (s, c) => (c || document).querySelector(s);
+  const $$   = (s, c) => [...(c || document).querySelectorAll(s)];
+  const wa   = msg => `https://wa.me/${WA}?text=${encodeURIComponent(msg)}`;
+  const lock = () => (document.body.style.overflow = 'hidden');
+  const free = () => (document.body.style.overflow = '');
 
-  /* ─── UTILS ─── */
-  const $ = (sel, ctx) => (ctx || document).querySelector(sel);
-  const $$ = (sel, ctx) => [...(ctx || document).querySelectorAll(sel)];
-  const waUrl = msg => `https://wa.me/${WA}?text=${encodeURIComponent(msg)}`;
+  /* ─── helper: open/close backdrop + modal ─── */
+  function openModal(bk, modal) { bk.classList.add('on'); modal.classList.add('on'); lock(); }
+  function closeModal(bk, modal) { bk.classList.remove('on'); modal.classList.remove('on'); free(); }
 
-  function lockScroll() { document.body.style.overflow = 'hidden'; }
-  function unlockScroll() { document.body.style.overflow = ''; }
+  /* ══════════════════════════════════════════
+     1. HERO SLIDER
+  ══════════════════════════════════════════ */
+  function initSlider() {
+    const slides = $$('.hslide');
+    const dots   = $$('.hdot');
+    const hHead  = $('#hHead');
+    const hSub   = $('#hSub');
+    if (!slides.length) return;
 
-  /* ─── 1. WHY SWEAT MODAL ─── */
-  function initSweatModal() {
-    const modal    = $('#sweatModal');
-    const backdrop = $('#sweatBackdrop');
-    const closeBtn = $('#sweatClose');
-    const skipBtn  = $('#sweatSkip');
-    const joinBtn  = $('#sweatJoinBtn');
-    if (!modal) return;
+    const copy = [
+      {
+        h: 'Run With Purpose.<br /><em>Grow With Community.</em>',
+        s: 'Join 500+ runners in Uyo building discipline, health, and real human connection — one Saturday at a time.'
+      },
+      {
+        h: 'Every Step Forward<br /><em>Is a Victory.</em>',
+        s: 'Beginners welcome. Advanced runners thrive. Good Sweat meets you exactly where you are — and pushes you further.'
+      },
+      {
+        h: 'Uyo Wakes at 6 AM.<br /><em>So Should You.</em>',
+        s: 'Four locations. One community. Every Saturday we hit the streets and remind ourselves what we are made of.'
+      }
+    ];
 
-    function open() {
-      modal.classList.add('open');
-      backdrop.classList.add('open');
-      lockScroll();
+    let cur = 0;
+    let timer;
+
+    function goTo(idx) {
+      slides[cur].classList.remove('is-active');
+      dots[cur].classList.remove('is-active');
+      cur = (idx + slides.length) % slides.length;
+      slides[cur].classList.add('is-active');
+      dots[cur].classList.add('is-active');
+
+      if (hHead && hSub) {
+        const tx = 'opacity .55s ease, transform .55s ease';
+        hHead.style.cssText = 'opacity:0;transform:translateY(16px)';
+        hSub.style.cssText  = 'opacity:0;transform:translateY(12px)';
+        setTimeout(() => {
+          hHead.innerHTML  = copy[cur].h;
+          hSub.textContent = copy[cur].s;
+          hHead.style.cssText = `transition:${tx};opacity:1;transform:none`;
+          hSub.style.cssText  = `transition:${tx};transition-delay:.12s;opacity:1;transform:none`;
+        }, 220);
+      }
     }
-    function close() {
-      modal.classList.remove('open');
-      backdrop.classList.remove('open');
-      unlockScroll();
-    }
 
-    // Delay open so hero loads first
-    setTimeout(open, 1200);
+    function next() { goTo(cur + 1); }
+    function startTimer() { timer = setInterval(next, 5800); }
+    function resetTimer() { clearInterval(timer); startTimer(); }
 
-    closeBtn && closeBtn.addEventListener('click', close);
-    skipBtn  && skipBtn.addEventListener('click', close);
-    backdrop.addEventListener('click', close);
-    joinBtn  && joinBtn.addEventListener('click', close); // will navigate via href
-
+    dots.forEach((d, i) => d.addEventListener('click', () => { goTo(i); resetTimer(); }));
     document.addEventListener('keydown', e => {
-      if (e.key === 'Escape' && modal.classList.contains('open')) close();
+      if (e.key === 'ArrowRight') { next(); resetTimer(); }
+      if (e.key === 'ArrowLeft')  { goTo(cur - 1); resetTimer(); }
     });
+
+    // Touch swipe
+    const hero = $('.hero');
+    if (hero) {
+      let sx = 0;
+      hero.addEventListener('touchstart', e => { sx = e.touches[0].clientX; }, { passive: true });
+      hero.addEventListener('touchend',   e => {
+        const dx = e.changedTouches[0].clientX - sx;
+        if (Math.abs(dx) > 48) { dx < 0 ? next() : goTo(cur - 1); resetTimer(); }
+      });
+    }
+
+    startTimer();
   }
 
-  /* ─── 2. NAVBAR SCROLL ─── */
-  function initNavbar() {
-    const nav = $('#navbar');
+  /* ══════════════════════════════════════════
+     2. LAZY VIDEO LOAD (all videos)
+     Loads actual src only when near viewport
+  ══════════════════════════════════════════ */
+  function initLazyVideos() {
+    const videos = $$('video[data-src]');
+    if (!videos.length) return;
+
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(en => {
+        if (en.isIntersecting) {
+          const vid = en.target;
+          // Copy data-src to src
+          vid.src = vid.dataset.src;
+          // Also update <source> children if present
+          $$('source[data-src]', vid).forEach(s => { s.src = s.dataset.src; });
+          vid.load();
+          // Auto-play muted ambient videos
+          if (vid.muted) {
+            vid.play().catch(() => {});
+          }
+          io.unobserve(vid);
+        }
+      });
+    }, { rootMargin: '200px' });
+
+    videos.forEach(v => io.observe(v));
+  }
+
+  /* ══════════════════════════════════════════
+     3. VIDEO PLAY BUTTONS (click to unmute/play)
+  ══════════════════════════════════════════ */
+  function initVideoButtons() {
+    // Full-width video break
+    const vbBtn = $('.vbp');
+    const vbVid = $('.vid-break video');
+    bindVidBtn(vbBtn, vbVid);
+
+    // Volunteer section
+    const vvBtn = $('.vvp');
+    const vvVid = $('.vol-vid');
+    bindVidBtn(vvBtn, vvVid);
+
+    // Gallery inline video
+    const gvBtn = $('.gvp');
+    const gvVid = $('.g-vid-item video');
+    bindVidBtn(gvBtn, gvVid);
+
+    // Accent video
+    const vaBtn = $('.vap');
+    const vaVid = $('.vid-accent video');
+    bindVidBtn(vaBtn, vaVid);
+
+    function bindVidBtn(btn, vid) {
+      if (!btn || !vid) return;
+      const wrap = btn.closest('[class]');
+      btn.addEventListener('click', () => {
+        if (vid.paused) {
+          // Pause all other non-muted playing videos
+          $$('video').forEach(v => { if (v !== vid && !v.muted) { v.pause(); v.muted = true; } });
+          vid.muted = false;
+          vid.play().catch(() => {});
+          btn.style.opacity = '0';
+          btn.style.pointerEvents = 'none';
+          if (wrap) wrap.classList.add('vid-playing');
+          vid.addEventListener('pause', () => {
+            btn.style.opacity = '1';
+            btn.style.pointerEvents = 'all';
+            if (wrap) wrap.classList.remove('vid-playing');
+          }, { once: true });
+        } else {
+          vid.pause();
+          vid.muted = true;
+          btn.style.opacity = '1';
+          btn.style.pointerEvents = 'all';
+          if (wrap) wrap.classList.remove('vid-playing');
+        }
+      });
+    }
+  }
+
+  /* ══════════════════════════════════════════
+     4. NAVBAR
+  ══════════════════════════════════════════ */
+  function initNav() {
+    const nav = $('#nav');
     if (!nav) return;
-    const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 56);
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
+    const fn = () => nav.classList.toggle('scrolled', window.scrollY > 50);
+    window.addEventListener('scroll', fn, { passive: true });
+    fn();
   }
 
-  /* ─── 3. HAMBURGER / MOBILE MENU ─── */
-  function initHamburger() {
-    const btn  = $('#hamburger');
-    const menu = $('#mobileMenu');
-    const links = $$('.mobile-link');
-    const joinMobile = $('.mobile-join-btn');
-    if (!btn || !menu) return;
+  /* ══════════════════════════════════════════
+     5. HAMBURGER / PANEL
+  ══════════════════════════════════════════ */
+  function initBurger() {
+    const btn   = $('#burger');
+    const panel = $('#panel');
+    const links = $$('.pm-a');
+    if (!btn || !panel) return;
+    let on = false;
 
-    let isOpen = false;
+    function open()  { on = true;  btn.classList.add('on'); panel.classList.add('on'); panel.setAttribute('aria-hidden','false'); btn.setAttribute('aria-expanded','true');  lock(); }
+    function close() { on = false; btn.classList.remove('on'); panel.classList.remove('on'); panel.setAttribute('aria-hidden','true');  btn.setAttribute('aria-expanded','false'); free(); }
 
-    function open() {
-      isOpen = true;
-      btn.classList.add('active');
-      menu.classList.add('open');
-      menu.setAttribute('aria-hidden', 'false');
-      btn.setAttribute('aria-expanded', 'true');
-      btn.setAttribute('aria-label', 'Close menu');
-      lockScroll();
-    }
-
-    function close() {
-      isOpen = false;
-      btn.classList.remove('active');
-      menu.classList.remove('open');
-      menu.setAttribute('aria-hidden', 'true');
-      btn.setAttribute('aria-expanded', 'false');
-      btn.setAttribute('aria-label', 'Open menu');
-      unlockScroll();
-    }
-
-    btn.addEventListener('click', () => isOpen ? close() : open());
-
-    // Close on any nav link click
-    [...links, joinMobile].forEach(el => el && el.addEventListener('click', close));
-
-    // Outside click
-    document.addEventListener('click', e => {
-      if (isOpen && !menu.contains(e.target) && !btn.contains(e.target)) close();
-    });
-
-    // Escape key
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Escape' && isOpen) { close(); btn.focus(); }
-    });
+    btn.addEventListener('click', () => on ? close() : open());
+    links.forEach(l => l.addEventListener('click', close));
+    document.addEventListener('click', e => { if (on && !panel.contains(e.target) && !btn.contains(e.target)) close(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && on) { close(); btn.focus(); } });
   }
 
-  /* ─── 4. SMOOTH SCROLL ─── */
+  /* ══════════════════════════════════════════
+     6. SMOOTH SCROLL
+  ══════════════════════════════════════════ */
   function initSmoothScroll() {
     $$('a[href^="#"]').forEach(a => {
       a.addEventListener('click', e => {
         const href = a.getAttribute('href');
         if (href === '#') return;
-        const target = $(href);
-        if (!target) return;
+        const t = $(href);
+        if (!t) return;
         e.preventDefault();
-        const navH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || 72;
-        window.scrollTo({ top: target.getBoundingClientRect().top + window.scrollY - navH, behavior: 'smooth' });
+        const navH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || 68;
+        window.scrollTo({ top: t.getBoundingClientRect().top + window.scrollY - navH, behavior: 'smooth' });
       });
     });
   }
 
-  /* ─── 5. SCROLL REVEAL ─── */
-  function initScrollReveal() {
+  /* ══════════════════════════════════════════
+     7. SCROLL REVEAL
+  ══════════════════════════════════════════ */
+  function initReveal() {
     const els = $$('.reveal');
     if (!els.length) return;
     const io = new IntersectionObserver(entries => {
-      entries.forEach(en => {
-        if (en.isIntersecting) {
-          en.target.classList.add('visible');
-          io.unobserve(en.target);
-        }
-      });
-    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+      entries.forEach(en => { if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } });
+    }, { threshold: 0.1, rootMargin: '0px 0px -44px 0px' });
     els.forEach(el => io.observe(el));
   }
 
-  /* ─── 6. BACK TO TOP ─── */
-  function initBackToTop() {
-    const btn = $('#backToTop');
+  /* ══════════════════════════════════════════
+     8. BACK TO TOP
+  ══════════════════════════════════════════ */
+  function initBtt() {
+    const btn = $('#btt');
     if (!btn) return;
-    window.addEventListener('scroll', () => {
-      btn.classList.toggle('visible', window.scrollY > 500);
-    }, { passive: true });
+    window.addEventListener('scroll', () => btn.classList.toggle('on', window.scrollY > 500), { passive: true });
     btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
   }
 
-  /* ─── 7. TICKER PAUSE ON HOVER ─── */
+  /* ══════════════════════════════════════════
+     9. TICKER PAUSE ON HOVER
+  ══════════════════════════════════════════ */
   function initTicker() {
-    const inner = $('.ticker-inner');
-    if (!inner) return;
-    inner.addEventListener('mouseenter', () => inner.style.animationPlayState = 'paused');
-    inner.addEventListener('mouseleave', () => inner.style.animationPlayState = 'running');
+    const row = $('#tickerRow');
+    if (!row) return;
+    row.addEventListener('mouseenter', () => (row.style.animationPlayState = 'paused'));
+    row.addEventListener('mouseleave', () => (row.style.animationPlayState = 'running'));
   }
 
-  /* ─── 8. VIDEO GRID — click to play/unmute ─── */
-  function initVideos() {
-    $$('.video-item').forEach(item => {
-      const vid = item.querySelector('video');
-      const cover = item.querySelector('.video-cover');
-      if (!vid || !cover) return;
-
-      item.addEventListener('click', () => {
-        const playing = item.classList.contains('playing');
-
-        if (playing) {
-          vid.pause(); vid.muted = true;
-          item.classList.remove('playing');
-          cover.style.opacity = '1'; cover.style.pointerEvents = 'all';
-        } else {
-          // Pause all others
-          $$('.video-item.playing').forEach(other => {
-            const ov = other.querySelector('video');
-            const oc = other.querySelector('.video-cover');
-            if (ov) { ov.pause(); ov.muted = true; }
-            if (oc) { oc.style.opacity = '1'; oc.style.pointerEvents = 'all'; }
-            other.classList.remove('playing');
-          });
-          vid.muted = false;
-          vid.play().catch(() => {});
-          item.classList.add('playing');
-          cover.style.opacity = '0'; cover.style.pointerEvents = 'none';
-        }
-      });
-
-      vid.addEventListener('ended', () => {
-        item.classList.remove('playing');
-        vid.muted = true;
-        cover.style.opacity = '1'; cover.style.pointerEvents = 'all';
-      });
-    });
-  }
-
-  /* ─── 9. LOCATION CARDS — show 3, CTA reveals 4th ─── */
-  function initLocationExpand() {
-    const btn = $('#seeAllLocationsBtn');
-    const hidden = $$('.hidden-card');
+  /* ══════════════════════════════════════════
+     10. LOCATION CARDS — show 3, CTA expands 4th
+  ══════════════════════════════════════════ */
+  function initLocCards() {
+    const btn    = $('#seeAllBtn');
+    const hidden = $$('.lcard-hidden');
     if (!btn || !hidden.length) return;
-
-    let expanded = false;
+    let on = false;
     btn.addEventListener('click', () => {
-      expanded = !expanded;
-      hidden.forEach(card => {
-        if (expanded) {
-          card.style.display = 'block';
-          requestAnimationFrame(() => card.classList.add('visible'));
-        } else {
-          card.style.display = 'none';
-          card.classList.remove('visible');
-        }
+      on = !on;
+      hidden.forEach(c => {
+        if (on) { c.style.display = 'block'; requestAnimationFrame(() => c.classList.add('reveal', 'in')); }
+        else    { c.style.display = 'none';  c.classList.remove('reveal', 'in'); }
       });
-      btn.textContent = expanded ? 'Show Less' : 'View All Locations';
+      btn.textContent = on ? 'Show Less' : 'View All Locations';
     });
   }
 
-  /* ─── 10. LOCATION FORM OVERLAY ─── */
-  function initLocationForm() {
-    const overlay = $('#locOverlay');
-    const closeBtn = $('#locClose');
-    const nameSpan = $('#formLocName');
-    const hiddenInput = $('#locHidden');
-    const form = $('#locationForm');
+  /* ══════════════════════════════════════════
+     11. LOCATION JOIN OVERLAY
+  ══════════════════════════════════════════ */
+  function initLocOverlay() {
+    const overlay  = $('#locOv');
+    const closeBtn = $('#locOvClose');
+    const nameSpan = $('#ovLocName');
+    const hidden   = $('#lHidden');
+    const form     = $('#locForm');
     if (!overlay) return;
 
-    function openForm(locationName) {
-      if (nameSpan) nameSpan.textContent = locationName;
-      if (hiddenInput) hiddenInput.value = locationName;
-      overlay.classList.add('open');
-      lockScroll();
-    }
-    function closeForm() {
-      overlay.classList.remove('open');
-      unlockScroll();
-    }
+    function open(loc) { if (nameSpan) nameSpan.textContent = loc; if (hidden) hidden.value = loc; overlay.classList.add('on'); lock(); }
+    function close()   { overlay.classList.remove('on'); free(); }
 
-    // Card buttons
-    $$('.card-btn').forEach(btn => {
-      btn.addEventListener('click', () => openForm(btn.dataset.location || 'a Location'));
-    });
-
-    closeBtn && closeBtn.addEventListener('click', closeForm);
-    overlay.addEventListener('click', e => { if (e.target === overlay) closeForm(); });
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Escape' && overlay.classList.contains('open')) closeForm();
-    });
+    $$('.lc-btn').forEach(b => b.addEventListener('click', () => open(b.dataset.loc || 'a Location')));
+    closeBtn && closeBtn.addEventListener('click', close);
+    overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && overlay.classList.contains('on')) close(); });
 
     form && form.addEventListener('submit', e => {
       e.preventDefault();
-      const name     = $('#locName')?.value.trim();
-      const phone    = $('#locPhone')?.value.trim();
-      const location = hiddenInput?.value;
+      const name  = $('#lName')?.value.trim();
+      const phone = $('#lPhone')?.value.trim();
+      const loc   = hidden?.value;
       if (!name || !phone) { alert('Please fill in all fields.'); return; }
-      const msg = `Hello Good Sweat Run Club Uyo,\n\nI'd like to join the *${location}* location.\n\nName: ${name}\nPhone: ${phone}\n\nPlease add me to the group. Thank you!`;
-      window.open(waUrl(msg), '_blank');
+      const msg = `Hello Good Sweat Run Club Uyo,\n\nI'd like to join the *${loc}* location.\n\nName: ${name}\nPhone: ${phone}\n\nPlease add me. Thank you!`;
+      window.open(wa(msg), '_blank');
       form.reset();
-      closeForm();
+      close();
     });
   }
 
-  /* ─── 11. MEMBERSHIP FORM ─── */
-  function initMembershipForm() {
-    const form = $('#membershipForm');
+  /* ══════════════════════════════════════════
+     12. MEMBERSHIP FORM
+  ══════════════════════════════════════════ */
+  function initMemForm() {
+    const form = $('#memForm');
     if (!form) return;
     form.addEventListener('submit', e => {
       e.preventDefault();
-      const name     = $('#memName')?.value.trim();
-      const phone    = $('#memPhone')?.value.trim();
-      const level    = $('#memLevel')?.value;
-      const location = $('#memLocation')?.value;
-      if (!name || !phone || !level || !location) { alert('Please fill in all fields.'); return; }
-      const msg = `Hello Good Sweat Run Club Uyo,\n\nI'd like to become a member.\n\n*Name:* ${name}\n*Phone:* ${phone}\n*Level:* ${level}\n*Location:* ${location}\n\nPlease reach out to onboard me. Thank you!`;
-      window.open(waUrl(msg), '_blank');
+      const name  = $('#mName')?.value.trim();
+      const phone = $('#mPhone')?.value.trim();
+      const level = $('#mLevel')?.value;
+      const loc   = $('#mLoc')?.value;
+      if (!name || !phone || !level || !loc) { alert('Please fill in all fields.'); return; }
+      const msg = `Hello Good Sweat Run Club Uyo,\n\nI'd like to become a member.\n\n*Name:* ${name}\n*Phone:* ${phone}\n*Level:* ${level}\n*Location:* ${loc}\n\nPlease reach out to onboard me. Thank you!`;
+      window.open(wa(msg), '_blank');
       form.reset();
     });
   }
 
-  /* ─── 12. REVIEWS — 3 visible, CTA shows 5 more ─── */
+  /* ══════════════════════════════════════════
+     13. REVIEWS EXPAND
+  ══════════════════════════════════════════ */
   function initReviews() {
-    const btn = $('#seeMoreBtn');
-    const hidden = $$('.hidden-review');
+    const btn    = $('#moreRvBtn');
+    const hidden = $$('.rv-hidden');
     if (!btn || !hidden.length) return;
-
-    let expanded = false;
+    let on = false;
     btn.addEventListener('click', () => {
-      expanded = !expanded;
-      hidden.forEach((card, i) => {
-        if (expanded) {
-          card.style.display = 'block';
-          requestAnimationFrame(() => {
-            card.classList.add('reveal');
-            setTimeout(() => card.classList.add('visible'), i * 80);
-          });
-        } else {
-          card.style.display = 'none';
-          card.classList.remove('visible');
-        }
+      on = !on;
+      hidden.forEach((r, i) => {
+        if (on) { r.style.display = 'block'; setTimeout(() => r.classList.add('reveal', 'in'), i * 60); }
+        else    { r.style.display = 'none';  r.classList.remove('reveal', 'in'); }
       });
-      btn.textContent = expanded ? 'Show Less Reviews' : 'See More Reviews';
+      btn.textContent = on ? 'Show Less Reviews' : 'See More Reviews';
     });
   }
 
-  /* ─── 13. RULES MODAL ─── */
-  function initRulesModal() {
-    const openBtn    = $('#openRulesBtn');
-    const modal      = $('#rulesModal');
-    const closeBtn   = $('#closeModal');
-    const agreeCheck = $('#agreeCheck');
-    const continueBtn= $('#continueBtn');
-    if (!modal) return;
+  /* ══════════════════════════════════════════
+     14. RULES MODAL
+  ══════════════════════════════════════════ */
+  function initRules() {
+    const openBtn = $('#openRules');
+    const bk      = $('#rulesBk');
+    const modal   = $('#rulesModal');
+    const closeB  = $('#rulesClose');
+    const chk     = $('#rmChk');
+    const cont    = $('#rmContinue');
+    if (!modal || !bk) return;
 
-    function open() { modal.classList.add('open'); lockScroll(); }
-    function close() {
-      modal.classList.remove('open'); unlockScroll();
-      if (agreeCheck) agreeCheck.checked = false;
-      if (continueBtn) continueBtn.disabled = true;
-    }
-
-    openBtn  && openBtn.addEventListener('click', open);
-    closeBtn && closeBtn.addEventListener('click', close);
-    modal.addEventListener('click', e => { if (e.target === modal) close(); });
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Escape' && modal.classList.contains('open')) close();
-    });
-
-    agreeCheck && continueBtn && agreeCheck.addEventListener('change', () => {
-      continueBtn.disabled = !agreeCheck.checked;
-    });
-    continueBtn && continueBtn.addEventListener('click', () => {
-      if (!continueBtn.disabled) close();
-    });
+    openBtn  && openBtn.addEventListener('click', () => openModal(bk, modal));
+    closeB   && closeB.addEventListener('click',  () => { closeModal(bk, modal); if (chk) chk.checked = false; if (cont) cont.disabled = true; });
+    bk.addEventListener('click', () => { closeModal(bk, modal); if (chk) chk.checked = false; if (cont) cont.disabled = true; });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && modal.classList.contains('on')) { closeModal(bk, modal); if (chk) chk.checked = false; if (cont) cont.disabled = true; } });
+    chk  && cont && chk.addEventListener('change',  () => (cont.disabled = !chk.checked));
+    cont && cont.addEventListener('click', () => { if (!cont.disabled) { closeModal(bk, modal); if (chk) chk.checked = false; cont.disabled = true; } });
   }
 
-  /* ─── 14. HERO VIDEO AUTOPLAY (iOS fix) ─── */
-  function initHeroVideo() {
-    const vid = $('.hero-video');
-    vid && vid.play().catch(() => {});
+  /* ══════════════════════════════════════════
+     15. WHY SWEAT MODAL — fires after 3 minutes
+  ══════════════════════════════════════════ */
+  function initSweatModal() {
+    const bk     = $('#swBk');
+    const modal  = $('#swModal');
+    const closeB = $('#swClose');
+    const skip   = $('#swSkip');
+    const join   = $('#swJoin');
+    if (!modal || !bk) return;
+
+    function open()  { openModal(bk, modal); }
+    function close() { closeModal(bk, modal); }
+
+    // Fire after 3 minutes (180,000 ms)
+    setTimeout(open, 180000);
+
+    closeB && closeB.addEventListener('click', close);
+    skip   && skip.addEventListener('click',   close);
+    join   && join.addEventListener('click',   close); // navigates via href
+    bk.addEventListener('click', close);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && modal.classList.contains('on')) close(); });
   }
 
-  /* ─── INIT ─── */
+  /* ══════════════════════════════════════════
+     INIT ALL
+  ══════════════════════════════════════════ */
   function init() {
-    initSweatModal();
-    initNavbar();
-    initHamburger();
+    initSlider();
+    initLazyVideos();
+    initVideoButtons();
+    initNav();
+    initBurger();
     initSmoothScroll();
-    initScrollReveal();
-    initBackToTop();
+    initReveal();
+    initBtt();
     initTicker();
-    initVideos();
-    initLocationExpand();
-    initLocationForm();
-    initMembershipForm();
+    initLocCards();
+    initLocOverlay();
+    initMemForm();
     initReviews();
-    initRulesModal();
-    initHeroVideo();
+    initRules();
+    initSweatModal();
   }
 
   document.readyState === 'loading'
