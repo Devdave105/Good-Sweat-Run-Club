@@ -1,6 +1,6 @@
 /* ================================================================
-   GOOD SWEAT RUN CLUB UYO — script.js v4
-   Modular · Lazy video loading · Why-Sweat modal at 3 min
+   GOOD SWEAT RUN CLUB UYO — script.js v5
+   Fixed: videos load immediately with real src, clean play/pause
 ================================================================ */
 (function () {
   'use strict';
@@ -12,9 +12,8 @@
   const lock = () => (document.body.style.overflow = 'hidden');
   const free = () => (document.body.style.overflow = '');
 
-  /* ─── helper: open/close backdrop + modal ─── */
-  function openModal(bk, modal) { bk.classList.add('on'); modal.classList.add('on'); lock(); }
-  function closeModal(bk, modal) { bk.classList.remove('on'); modal.classList.remove('on'); free(); }
+  function openModal (bk, m) { bk.classList.add('on'); m.classList.add('on'); lock(); }
+  function closeModal(bk, m) { bk.classList.remove('on'); m.classList.remove('on'); free(); }
 
   /* ══════════════════════════════════════════
      1. HERO SLIDER
@@ -27,22 +26,15 @@
     if (!slides.length) return;
 
     const copy = [
-      {
-        h: 'Run With Purpose.<br /><em>Grow With Community.</em>',
-        s: 'Join 500+ runners in Uyo building discipline, health, and real human connection — one Saturday at a time.'
-      },
-      {
-        h: 'Every Step Forward<br /><em>Is a Victory.</em>',
-        s: 'Beginners welcome. Advanced runners thrive. Good Sweat meets you exactly where you are — and pushes you further.'
-      },
-      {
-        h: 'Uyo Wakes at 6 AM.<br /><em>So Should You.</em>',
-        s: 'Four locations. One community. Every Saturday we hit the streets and remind ourselves what we are made of.'
-      }
+      { h: 'Run With Purpose.<br /><em>Grow With Community.</em>',
+        s: 'Join 500+ runners in Uyo building discipline, health, and real connection — one Saturday at a time.' },
+      { h: 'Every Step Forward<br /><em>Is a Victory.</em>',
+        s: 'Beginners welcome. Advanced runners thrive. Good Sweat meets you where you are — and pushes you further.' },
+      { h: 'Uyo Wakes at 6 AM.<br /><em>So Should You.</em>',
+        s: 'Four locations. One community. Every Saturday we hit the streets and remind ourselves what we are made of.' }
     ];
 
-    let cur = 0;
-    let timer;
+    let cur = 0, timer;
 
     function goTo(idx) {
       slides[cur].classList.remove('is-active');
@@ -50,17 +42,16 @@
       cur = (idx + slides.length) % slides.length;
       slides[cur].classList.add('is-active');
       dots[cur].classList.add('is-active');
-
       if (hHead && hSub) {
         const tx = 'opacity .55s ease, transform .55s ease';
-        hHead.style.cssText = 'opacity:0;transform:translateY(16px)';
-        hSub.style.cssText  = 'opacity:0;transform:translateY(12px)';
+        hHead.style.cssText = 'opacity:0;transform:translateY(14px)';
+        hSub.style.cssText  = 'opacity:0;transform:translateY(10px)';
         setTimeout(() => {
           hHead.innerHTML  = copy[cur].h;
           hSub.textContent = copy[cur].s;
           hHead.style.cssText = `transition:${tx};opacity:1;transform:none`;
           hSub.style.cssText  = `transition:${tx};transition-delay:.12s;opacity:1;transform:none`;
-        }, 220);
+        }, 200);
       }
     }
 
@@ -74,103 +65,104 @@
       if (e.key === 'ArrowLeft')  { goTo(cur - 1); resetTimer(); }
     });
 
-    // Touch swipe
     const hero = $('.hero');
     if (hero) {
       let sx = 0;
       hero.addEventListener('touchstart', e => { sx = e.touches[0].clientX; }, { passive: true });
       hero.addEventListener('touchend',   e => {
         const dx = e.changedTouches[0].clientX - sx;
-        if (Math.abs(dx) > 48) { dx < 0 ? next() : goTo(cur - 1); resetTimer(); }
+        if (Math.abs(dx) > 44) { dx < 0 ? next() : goTo(cur - 1); resetTimer(); }
       });
     }
-
     startTimer();
   }
 
   /* ══════════════════════════════════════════
-     2. LAZY VIDEO LOAD (all videos)
-     Loads actual src only when near viewport
+     2. VIDEOS  — unified, bulletproof system
+     Each video has a play button overlay.
+     Click → loads (if needed) → unmutes → plays.
+     Click again → pauses. Only one unmuted at a time.
   ══════════════════════════════════════════ */
-  function initLazyVideos() {
-    const videos = $$('video[data-src]');
-    if (!videos.length) return;
+  function initVideos() {
+    // Map of: { btn selector, video selector }
+    const pairs = [
+      { b: '.vbp', v: '.vid-break video'   },   // Video 1: cinematic break
+      { b: '.vvp', v: '.vol-vid'           },   // Video 2: volunteer section
+      { b: '.gvp', v: '.g-vid-item video'  },   // Video 3: gallery inline
+      { b: '.vap', v: '.vid-accent video'  },   // Video 4: accent between sections
+    ];
 
-    const io = new IntersectionObserver(entries => {
-      entries.forEach(en => {
-        if (en.isIntersecting) {
-          const vid = en.target;
-          // Copy data-src to src
-          vid.src = vid.dataset.src;
-          // Also update <source> children if present
-          $$('source[data-src]', vid).forEach(s => { s.src = s.dataset.src; });
-          vid.load();
-          // Auto-play muted ambient videos
-          if (vid.muted) {
-            vid.play().catch(() => {});
-          }
-          io.unobserve(vid);
-        }
-      });
-    }, { rootMargin: '200px' });
-
-    videos.forEach(v => io.observe(v));
-  }
-
-  /* ══════════════════════════════════════════
-     3. VIDEO PLAY BUTTONS (click to unmute/play)
-  ══════════════════════════════════════════ */
-  function initVideoButtons() {
-    // Full-width video break
-    const vbBtn = $('.vbp');
-    const vbVid = $('.vid-break video');
-    bindVidBtn(vbBtn, vbVid);
-
-    // Volunteer section
-    const vvBtn = $('.vvp');
-    const vvVid = $('.vol-vid');
-    bindVidBtn(vvBtn, vvVid);
-
-    // Gallery inline video
-    const gvBtn = $('.gvp');
-    const gvVid = $('.g-vid-item video');
-    bindVidBtn(gvBtn, gvVid);
-
-    // Accent video
-    const vaBtn = $('.vap');
-    const vaVid = $('.vid-accent video');
-    bindVidBtn(vaBtn, vaVid);
-
-    function bindVidBtn(btn, vid) {
+    pairs.forEach(({ b, v }) => {
+      const btn = $(b);
+      const vid = $(v);
       if (!btn || !vid) return;
-      const wrap = btn.closest('[class]');
+
+      // Make sure the video is properly loaded
+      // (src is already set in HTML, preload=metadata)
+      // Attempt silent autoplay muted in background for ambient feel
+      vid.muted = true;
+      vid.play().catch(() => {
+        // Autoplay blocked — video will play on user click instead
+      });
+
       btn.addEventListener('click', () => {
-        if (vid.paused) {
-          // Pause all other non-muted playing videos
-          $$('video').forEach(v => { if (v !== vid && !v.muted) { v.pause(); v.muted = true; } });
-          vid.muted = false;
-          vid.play().catch(() => {});
-          btn.style.opacity = '0';
-          btn.style.pointerEvents = 'none';
-          if (wrap) wrap.classList.add('vid-playing');
-          vid.addEventListener('pause', () => {
-            btn.style.opacity = '1';
-            btn.style.pointerEvents = 'all';
-            if (wrap) wrap.classList.remove('vid-playing');
-          }, { once: true });
-        } else {
+        const isPlaying = !vid.paused && !vid.ended;
+
+        if (isPlaying && !vid.muted) {
+          // Already playing with sound — pause it
           vid.pause();
-          vid.muted = true;
-          btn.style.opacity = '1';
-          btn.style.pointerEvents = 'all';
-          if (wrap) wrap.classList.remove('vid-playing');
+          showBtn(btn);
+        } else if (isPlaying && vid.muted) {
+          // Playing silently (ambient) — unmute it, show as "playing"
+          pauseAllOthers(vid);
+          vid.muted = false;
+          hideBtn(btn);
+        } else {
+          // Paused — start playing with sound
+          pauseAllOthers(vid);
+          vid.muted = false;
+          vid.play().then(() => {
+            hideBtn(btn);
+          }).catch(() => {
+            // If play is blocked, try muted first
+            vid.muted = true;
+            vid.play().catch(() => {});
+            hideBtn(btn);
+          });
+        }
+
+        // When video ends or is paused externally — show button again
+        vid.onpause = () => { showBtn(btn); };
+        vid.onended = () => { showBtn(btn); vid.muted = true; };
+      });
+    });
+
+    function pauseAllOthers(currentVid) {
+      $$('video').forEach(v => {
+        if (v !== currentVid) {
+          v.pause();
+          v.muted = true;
         }
       });
+      // Reset all other buttons to visible
+      $$('.vid-play-btn').forEach(b => showBtn(b));
+    }
+
+    function hideBtn(btn) {
+      btn.style.opacity = '0';
+      btn.style.pointerEvents = 'none';
+      btn.style.transform = 'translate(-50%,-50%) scale(.8)';
+    }
+
+    function showBtn(btn) {
+      btn.style.opacity = '1';
+      btn.style.pointerEvents = 'all';
+      btn.style.transform = 'translate(-50%,-50%) scale(1)';
     }
   }
 
   /* ══════════════════════════════════════════
-     4. NAVBAR
+     3. NAVBAR SCROLL
   ══════════════════════════════════════════ */
   function initNav() {
     const nav = $('#nav');
@@ -181,7 +173,7 @@
   }
 
   /* ══════════════════════════════════════════
-     5. HAMBURGER / PANEL
+     4. HAMBURGER / PANEL
   ══════════════════════════════════════════ */
   function initBurger() {
     const btn   = $('#burger');
@@ -190,56 +182,86 @@
     if (!btn || !panel) return;
     let on = false;
 
-    function open()  { on = true;  btn.classList.add('on'); panel.classList.add('on'); panel.setAttribute('aria-hidden','false'); btn.setAttribute('aria-expanded','true');  lock(); }
-    function close() { on = false; btn.classList.remove('on'); panel.classList.remove('on'); panel.setAttribute('aria-hidden','true');  btn.setAttribute('aria-expanded','false'); free(); }
+    const open = () => {
+      on = true;
+      btn.classList.add('on');
+      panel.classList.add('on');
+      panel.setAttribute('aria-hidden', 'false');
+      btn.setAttribute('aria-expanded', 'true');
+      lock();
+    };
+    const close = () => {
+      on = false;
+      btn.classList.remove('on');
+      panel.classList.remove('on');
+      panel.setAttribute('aria-hidden', 'true');
+      btn.setAttribute('aria-expanded', 'false');
+      free();
+    };
 
-    btn.addEventListener('click', () => on ? close() : open());
+    btn.addEventListener('click', () => (on ? close() : open()));
     links.forEach(l => l.addEventListener('click', close));
-    document.addEventListener('click', e => { if (on && !panel.contains(e.target) && !btn.contains(e.target)) close(); });
-    document.addEventListener('keydown', e => { if (e.key === 'Escape' && on) { close(); btn.focus(); } });
+    document.addEventListener('click', e => {
+      if (on && !panel.contains(e.target) && !btn.contains(e.target)) close();
+    });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && on) { close(); btn.focus(); }
+    });
   }
 
   /* ══════════════════════════════════════════
-     6. SMOOTH SCROLL
+     5. SMOOTH SCROLL
   ══════════════════════════════════════════ */
   function initSmoothScroll() {
     $$('a[href^="#"]').forEach(a => {
       a.addEventListener('click', e => {
         const href = a.getAttribute('href');
         if (href === '#') return;
-        const t = $(href);
-        if (!t) return;
+        const target = $(href);
+        if (!target) return;
         e.preventDefault();
-        const navH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || 68;
-        window.scrollTo({ top: t.getBoundingClientRect().top + window.scrollY - navH, behavior: 'smooth' });
+        const navH = parseInt(
+          getComputedStyle(document.documentElement).getPropertyValue('--nav-h')
+        ) || 68;
+        window.scrollTo({
+          top: target.getBoundingClientRect().top + window.scrollY - navH,
+          behavior: 'smooth'
+        });
       });
     });
   }
 
   /* ══════════════════════════════════════════
-     7. SCROLL REVEAL
+     6. SCROLL REVEAL
   ══════════════════════════════════════════ */
   function initReveal() {
     const els = $$('.reveal');
     if (!els.length) return;
     const io = new IntersectionObserver(entries => {
-      entries.forEach(en => { if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } });
-    }, { threshold: 0.1, rootMargin: '0px 0px -44px 0px' });
+      entries.forEach(en => {
+        if (en.isIntersecting) {
+          en.target.classList.add('in');
+          io.unobserve(en.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
     els.forEach(el => io.observe(el));
   }
 
   /* ══════════════════════════════════════════
-     8. BACK TO TOP
+     7. BACK TO TOP
   ══════════════════════════════════════════ */
   function initBtt() {
     const btn = $('#btt');
     if (!btn) return;
-    window.addEventListener('scroll', () => btn.classList.toggle('on', window.scrollY > 500), { passive: true });
+    window.addEventListener('scroll', () => {
+      btn.classList.toggle('on', window.scrollY > 500);
+    }, { passive: true });
     btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
   }
 
   /* ══════════════════════════════════════════
-     9. TICKER PAUSE ON HOVER
+     8. TICKER PAUSE ON HOVER
   ══════════════════════════════════════════ */
   function initTicker() {
     const row = $('#tickerRow');
@@ -249,7 +271,7 @@
   }
 
   /* ══════════════════════════════════════════
-     10. LOCATION CARDS — show 3, CTA expands 4th
+     9. LOCATION CARDS — 3 shown, CTA shows 4th
   ══════════════════════════════════════════ */
   function initLocCards() {
     const btn    = $('#seeAllBtn');
@@ -259,37 +281,51 @@
     btn.addEventListener('click', () => {
       on = !on;
       hidden.forEach(c => {
-        if (on) { c.style.display = 'block'; requestAnimationFrame(() => c.classList.add('reveal', 'in')); }
-        else    { c.style.display = 'none';  c.classList.remove('reveal', 'in'); }
+        if (on) {
+          c.style.display = 'block';
+          requestAnimationFrame(() => c.classList.add('reveal', 'in'));
+        } else {
+          c.style.display = 'none';
+          c.classList.remove('reveal', 'in');
+        }
       });
       btn.textContent = on ? 'Show Less' : 'View All Locations';
     });
   }
 
   /* ══════════════════════════════════════════
-     11. LOCATION JOIN OVERLAY
+     10. LOCATION JOIN OVERLAY
   ══════════════════════════════════════════ */
   function initLocOverlay() {
     const overlay  = $('#locOv');
     const closeBtn = $('#locOvClose');
     const nameSpan = $('#ovLocName');
-    const hidden   = $('#lHidden');
+    const hiddenIn = $('#lHidden');
     const form     = $('#locForm');
     if (!overlay) return;
 
-    function open(loc) { if (nameSpan) nameSpan.textContent = loc; if (hidden) hidden.value = loc; overlay.classList.add('on'); lock(); }
-    function close()   { overlay.classList.remove('on'); free(); }
+    const open  = loc => {
+      if (nameSpan) nameSpan.textContent = loc;
+      if (hiddenIn) hiddenIn.value = loc;
+      overlay.classList.add('on');
+      lock();
+    };
+    const close = () => { overlay.classList.remove('on'); free(); };
 
-    $$('.lc-btn').forEach(b => b.addEventListener('click', () => open(b.dataset.loc || 'a Location')));
+    $$('.lc-btn').forEach(b =>
+      b.addEventListener('click', () => open(b.dataset.loc || 'a Location'))
+    );
     closeBtn && closeBtn.addEventListener('click', close);
     overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
-    document.addEventListener('keydown', e => { if (e.key === 'Escape' && overlay.classList.contains('on')) close(); });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && overlay.classList.contains('on')) close();
+    });
 
     form && form.addEventListener('submit', e => {
       e.preventDefault();
       const name  = $('#lName')?.value.trim();
       const phone = $('#lPhone')?.value.trim();
-      const loc   = hidden?.value;
+      const loc   = hiddenIn?.value;
       if (!name || !phone) { alert('Please fill in all fields.'); return; }
       const msg = `Hello Good Sweat Run Club Uyo,\n\nI'd like to join the *${loc}* location.\n\nName: ${name}\nPhone: ${phone}\n\nPlease add me. Thank you!`;
       window.open(wa(msg), '_blank');
@@ -299,7 +335,7 @@
   }
 
   /* ══════════════════════════════════════════
-     12. MEMBERSHIP FORM
+     11. MEMBERSHIP FORM
   ══════════════════════════════════════════ */
   function initMemForm() {
     const form = $('#memForm');
@@ -318,7 +354,7 @@
   }
 
   /* ══════════════════════════════════════════
-     13. REVIEWS EXPAND
+     12. REVIEWS — 3 shown, CTA reveals 5 more
   ══════════════════════════════════════════ */
   function initReviews() {
     const btn    = $('#moreRvBtn');
@@ -328,15 +364,20 @@
     btn.addEventListener('click', () => {
       on = !on;
       hidden.forEach((r, i) => {
-        if (on) { r.style.display = 'block'; setTimeout(() => r.classList.add('reveal', 'in'), i * 60); }
-        else    { r.style.display = 'none';  r.classList.remove('reveal', 'in'); }
+        if (on) {
+          r.style.display = 'block';
+          setTimeout(() => r.classList.add('reveal', 'in'), i * 60);
+        } else {
+          r.style.display = 'none';
+          r.classList.remove('reveal', 'in');
+        }
       });
       btn.textContent = on ? 'Show Less Reviews' : 'See More Reviews';
     });
   }
 
   /* ══════════════════════════════════════════
-     14. RULES MODAL
+     13. RULES MODAL
   ══════════════════════════════════════════ */
   function initRules() {
     const openBtn = $('#openRules');
@@ -347,16 +388,26 @@
     const cont    = $('#rmContinue');
     if (!modal || !bk) return;
 
-    openBtn  && openBtn.addEventListener('click', () => openModal(bk, modal));
-    closeB   && closeB.addEventListener('click',  () => { closeModal(bk, modal); if (chk) chk.checked = false; if (cont) cont.disabled = true; });
-    bk.addEventListener('click', () => { closeModal(bk, modal); if (chk) chk.checked = false; if (cont) cont.disabled = true; });
-    document.addEventListener('keydown', e => { if (e.key === 'Escape' && modal.classList.contains('on')) { closeModal(bk, modal); if (chk) chk.checked = false; if (cont) cont.disabled = true; } });
-    chk  && cont && chk.addEventListener('change',  () => (cont.disabled = !chk.checked));
-    cont && cont.addEventListener('click', () => { if (!cont.disabled) { closeModal(bk, modal); if (chk) chk.checked = false; cont.disabled = true; } });
+    const reset = () => {
+      if (chk)  chk.checked = false;
+      if (cont) cont.disabled = true;
+    };
+
+    openBtn && openBtn.addEventListener('click', () => openModal(bk, modal));
+    closeB  && closeB.addEventListener('click',  () => { closeModal(bk, modal); reset(); });
+    bk.addEventListener('click', () => { closeModal(bk, modal); reset(); });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && modal.classList.contains('on')) { closeModal(bk, modal); reset(); }
+    });
+    chk  && cont && chk.addEventListener('change', () => (cont.disabled = !chk.checked));
+    cont && cont.addEventListener('click', () => {
+      if (!cont.disabled) { closeModal(bk, modal); reset(); }
+    });
   }
 
   /* ══════════════════════════════════════════
-     15. WHY SWEAT MODAL — fires after 3 minutes
+     14. WHY SWEAT MODAL — fires after 3 minutes
+         (180,000 ms = 3 min)
   ══════════════════════════════════════════ */
   function initSweatModal() {
     const bk     = $('#swBk');
@@ -366,26 +417,27 @@
     const join   = $('#swJoin');
     if (!modal || !bk) return;
 
-    function open()  { openModal(bk, modal); }
-    function close() { closeModal(bk, modal); }
+    const open  = () => openModal(bk, modal);
+    const close = () => closeModal(bk, modal);
 
-    // Fire after 3 minutes (180,000 ms)
+    // 3 minutes after page load
     setTimeout(open, 180000);
 
     closeB && closeB.addEventListener('click', close);
     skip   && skip.addEventListener('click',   close);
-    join   && join.addEventListener('click',   close); // navigates via href
+    join   && join.addEventListener('click',   close);
     bk.addEventListener('click', close);
-    document.addEventListener('keydown', e => { if (e.key === 'Escape' && modal.classList.contains('on')) close(); });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && modal.classList.contains('on')) close();
+    });
   }
 
   /* ══════════════════════════════════════════
-     INIT ALL
+     INIT
   ══════════════════════════════════════════ */
   function init() {
     initSlider();
-    initLazyVideos();
-    initVideoButtons();
+    initVideos();
     initNav();
     initBurger();
     initSmoothScroll();
