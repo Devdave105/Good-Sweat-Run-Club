@@ -125,9 +125,9 @@ h3{font-family:var(--fO);font-size:1.15rem;font-weight:600;letter-spacing:.03em;
 }
 .hslide.is-active{opacity:1}
 
-.hs-1{background-image:url('https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?w=1400&h=900&fit=crop&q=58')}
-.hs-2{background-image:url('https://images.unsplash.com/photo-1530143584546-02191bc84eb5?w=1400&h=900&fit=crop&q=58')}
-.hs-3{background-image:url('https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=1400&h=900&fit=crop&q=58')}
+.hs-1{background-image:url('image/b2.jpeg')}
+.hs-2{background-image:url('image/b4.jpeg')}
+.hs-3{background-image:url('image/b5.jpeg')}
 
 .hero-veil{
   position:absolute;inset:0;z-index:1;
