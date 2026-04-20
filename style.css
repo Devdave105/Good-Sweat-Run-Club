@@ -280,19 +280,6 @@ h3{font-family:var(--fO);font-size:1.15rem;font-weight:600;letter-spacing:.03em;
 .vb-text .label{margin-bottom:10px}
 .vb-text p{font-family:var(--fC);font-size:clamp(1.3rem,2.8vw,2rem);color:var(--white);font-style:italic;line-height:1.4;max-width:500px}
 
-/* ── VIDEO PLAY BUTTON (shared) ── */
-.vid-play-btn{
-  position:absolute;top:50%;left:50%;
-  transform:translate(-50%,-50%);
-  width:64px;height:64px;border-radius:50%;
-  background:rgba(10,10,10,.72);border:1px solid rgba(201,168,76,.35);
-  display:flex;align-items:center;justify-content:center;
-  transition:var(--tr);cursor:pointer;
-  z-index:2;
-}
-.vid-play-btn svg{width:22px;height:22px;margin-left:3px}
-.vid-play-btn:hover{background:rgba(10,10,10,.9);transform:translate(-50%,-50%) scale(1.08)}
-.vid-playing .vid-play-btn{opacity:0;pointer-events:none}
 
 /* ── EVENT ── */
 .event-s{background:var(--ink2)}
@@ -500,6 +487,78 @@ h3{font-family:var(--fO);font-size:1.15rem;font-weight:600;letter-spacing:.03em;
 .sw-item p{font-size:.82rem;color:var(--w60);line-height:1.75}
 .sw-skip{text-align:center;font-size:.74rem;color:var(--w30);cursor:pointer;margin-top:14px;transition:color .2s}
 .sw-skip:hover{color:var(--w60)}
+
+
+/* ── VIDEO CONTROLS BAR ── */
+
+/* Wrapper — each video parent must be position:relative */
+.vc-bar {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  padding: 12px 16px;
+  background: linear-gradient(to top, rgba(0,0,0,.72) 0%, transparent 100%);
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity .28s ease, transform .28s ease;
+  pointer-events: none;
+}
+
+/* Show bar on hover over parent container */
+.vid-break-inner:hover   .vc-bar,
+.vol-vid-wrap:hover      .vc-bar,
+.g-vid-item:hover        .vc-bar,
+.vid-accent-inner:hover  .vc-bar,
+/* Stay visible when bar itself is hovered */
+.vc-bar:hover,
+/* Shown class for touch devices */
+.vc-bar.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: all;
+}
+
+/* Individual control button */
+.vc-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(10,10,10,.65);
+  border: 1px solid rgba(255,255,255,.18);
+  color: var(--white);
+  cursor: pointer;
+  transition: background .2s, transform .2s, border-color .2s;
+  flex-shrink: 0;
+}
+.vc-btn:hover {
+  background: rgba(201,168,76,.85);
+  border-color: var(--gold);
+  color: var(--ink);
+  transform: scale(1.1);
+}
+.vc-btn svg {
+  width: 16px;
+  height: 16px;
+  pointer-events: none;
+}
+/* Fullscreen button slightly larger */
+.vc-btn[aria-label="Fullscreen"] {
+  width: 36px;
+  height: 36px;
+}
+
+/* ── Touch tap helper — show bar on tap ── */
+@media (hover: none) {
+  .vc-bar { opacity: 0; pointer-events: none; }
+  .vc-bar.visible { opacity: 1; pointer-events: all; }
+}
 
 /* ════════════════════════════
    RESPONSIVE

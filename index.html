@@ -274,7 +274,7 @@
 ═══════════════════════════════════════════ -->
 <div class="vid-break reveal">
   <div class="vid-break-inner">
-    <video muted loop playsinline preload="metadata" src="vidoe/v22.mp4" poster="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=1200&h=500&fit=crop&q=60">
+    <video muted loop playsinline preload="metadata" src="vidoe/v33.mp4" poster="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=1200&h=500&fit=crop&q=60">
       <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4" />
     </video>
     <div class="vid-break-veil">
@@ -283,9 +283,20 @@
         <p>"The streets of Uyo look different at 6 AM.<br />Come see for yourself."</p>
       </div>
     </div>
-    <button class="vid-play-btn vbp" aria-label="Play video">
-      <svg viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21" fill="var(--gold)"/></svg>
-    </button>
+    <div class="vc-bar vb-bar">
+      <button class="vc-btn vb-play"  aria-label="Play / Pause">
+        <svg class="ic-play"  viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21" fill="currentColor"/></svg>
+        <svg class="ic-pause" viewBox="0 0 24 24" style="display:none"><rect x="6" y="4" width="4" height="16" rx="1" fill="currentColor"/><rect x="14" y="4" width="4" height="16" rx="1" fill="currentColor"/></svg>
+      </button>
+      <button class="vc-btn vb-mute"  aria-label="Mute / Unmute">
+        <svg class="ic-snd"  viewBox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4V5z" fill="currentColor"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg>
+        <svg class="ic-muted" viewBox="0 0 24 24" style="display:none"><path d="M11 5L6 9H2v6h4l5 4V5z" fill="currentColor"/><line x1="23" y1="9" x2="17" y2="15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="17" y1="9" x2="23" y2="15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+      <button class="vc-btn vb-fs"    aria-label="Fullscreen">
+        <svg class="ic-fs"  viewBox="0 0 24 24" fill="none"><path d="M8 3H5a2 2 0 00-2 2v3M16 3h3a2 2 0 012 2v3M21 16v3a2 2 0 01-2 2h-3M8 21H5a2 2 0 01-2-2v-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <svg class="ic-exit-fs" viewBox="0 0 24 24" fill="none" style="display:none"><path d="M3 8V5a2 2 0 012-2h3M16 3h3a2 2 0 012 2v3M21 16v3a2 2 0 01-2 2h-3M8 21H5a2 2 0 01-2-2v-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
   </div>
 </div>
 
@@ -337,12 +348,23 @@
       <a href="https://forms.google.com" target="_blank" rel="noopener" class="btn btn-g">Apply as Volunteer</a>
     </div>
     <div class="vol-vid-wrap">
-      <video class="vol-vid" muted loop playsinline preload="metadata" src="vidoe/vii5.mp4" poster="https://images.unsplash.com/photo-1544717305-2782549b5136?w=600&h=400&fit=crop&q=60">
+      <video class="vol-vid" muted loop playsinline preload="metadata" src="https://www.w3schools.com/html/movie.mp4" poster="https://images.unsplash.com/photo-1544717305-2782549b5136?w=600&h=400&fit=crop&q=60">
         <source src="https://www.w3schools.com/html/movie.mp4" type="video/mp4" />
       </video>
-      <button class="vid-play-btn vvp" aria-label="Play video">
-        <svg viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21" fill="var(--gold)"/></svg>
+    <div class="vc-bar vv-bar">
+      <button class="vc-btn vv-play"  aria-label="Play / Pause">
+        <svg class="ic-play"  viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21" fill="currentColor"/></svg>
+        <svg class="ic-pause" viewBox="0 0 24 24" style="display:none"><rect x="6" y="4" width="4" height="16" rx="1" fill="currentColor"/><rect x="14" y="4" width="4" height="16" rx="1" fill="currentColor"/></svg>
       </button>
+      <button class="vc-btn vv-mute"  aria-label="Mute / Unmute">
+        <svg class="ic-snd"  viewBox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4V5z" fill="currentColor"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg>
+        <svg class="ic-muted" viewBox="0 0 24 24" style="display:none"><path d="M11 5L6 9H2v6h4l5 4V5z" fill="currentColor"/><line x1="23" y1="9" x2="17" y2="15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="17" y1="9" x2="23" y2="15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+      <button class="vc-btn vv-fs"    aria-label="Fullscreen">
+        <svg class="ic-fs"  viewBox="0 0 24 24" fill="none"><path d="M8 3H5a2 2 0 00-2 2v3M16 3h3a2 2 0 012 2v3M21 16v3a2 2 0 01-2 2h-3M8 21H5a2 2 0 01-2-2v-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <svg class="ic-exit-fs" viewBox="0 0 24 24" fill="none" style="display:none"><path d="M3 8V5a2 2 0 012-2h3M16 3h3a2 2 0 012 2v3M21 16v3a2 2 0 01-2 2h-3M8 21H5a2 2 0 01-2-2v-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
     </div>
   </div>
 </section>
@@ -375,12 +397,23 @@
     <!-- VIDEO 3 — inline in gallery -->
     <div class="g-vid-row reveal">
       <div class="g-vid-item">
-        <video muted loop playsinline preload="metadata" src="vidoe/vv1.mp4" poster="https://images.unsplash.com/photo-1502904550040-7534597429ae?w=1100&h=480&fit=crop&q=60">
+        <video muted loop playsinline preload="metadata" src="https://www.w3schools.com/html/mov_bbb.mp4" poster="https://images.unsplash.com/photo-1502904550040-7534597429ae?w=1100&h=480&fit=crop&q=60">
           <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4" />
         </video>
-        <button class="vid-play-btn gvp" aria-label="Play video">
-          <svg viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21" fill="var(--gold)"/></svg>
-        </button>
+    <div class="vc-bar gv-bar">
+      <button class="vc-btn gv-play"  aria-label="Play / Pause">
+        <svg class="ic-play"  viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21" fill="currentColor"/></svg>
+        <svg class="ic-pause" viewBox="0 0 24 24" style="display:none"><rect x="6" y="4" width="4" height="16" rx="1" fill="currentColor"/><rect x="14" y="4" width="4" height="16" rx="1" fill="currentColor"/></svg>
+      </button>
+      <button class="vc-btn gv-mute"  aria-label="Mute / Unmute">
+        <svg class="ic-snd"  viewBox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4V5z" fill="currentColor"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg>
+        <svg class="ic-muted" viewBox="0 0 24 24" style="display:none"><path d="M11 5L6 9H2v6h4l5 4V5z" fill="currentColor"/><line x1="23" y1="9" x2="17" y2="15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="17" y1="9" x2="23" y2="15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+      <button class="vc-btn gv-fs"    aria-label="Fullscreen">
+        <svg class="ic-fs"  viewBox="0 0 24 24" fill="none"><path d="M8 3H5a2 2 0 00-2 2v3M16 3h3a2 2 0 012 2v3M21 16v3a2 2 0 01-2 2h-3M8 21H5a2 2 0 01-2-2v-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <svg class="ic-exit-fs" viewBox="0 0 24 24" fill="none" style="display:none"><path d="M3 8V5a2 2 0 012-2h3M16 3h3a2 2 0 012 2v3M21 16v3a2 2 0 01-2 2h-3M8 21H5a2 2 0 01-2-2v-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
       </div>
     </div>
 
@@ -430,9 +463,20 @@
       <source src="https://www.w3schools.com/html/movie.mp4" type="video/mp4" />
     </video>
     <div class="vid-accent-veil"></div>
-    <button class="vid-play-btn vap" aria-label="Play video">
-      <svg viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21" fill="var(--gold)"/></svg>
-    </button>
+    <div class="vc-bar va-bar">
+      <button class="vc-btn va-play"  aria-label="Play / Pause">
+        <svg class="ic-play"  viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21" fill="currentColor"/></svg>
+        <svg class="ic-pause" viewBox="0 0 24 24" style="display:none"><rect x="6" y="4" width="4" height="16" rx="1" fill="currentColor"/><rect x="14" y="4" width="4" height="16" rx="1" fill="currentColor"/></svg>
+      </button>
+      <button class="vc-btn va-mute"  aria-label="Mute / Unmute">
+        <svg class="ic-snd"  viewBox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4V5z" fill="currentColor"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg>
+        <svg class="ic-muted" viewBox="0 0 24 24" style="display:none"><path d="M11 5L6 9H2v6h4l5 4V5z" fill="currentColor"/><line x1="23" y1="9" x2="17" y2="15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="17" y1="9" x2="23" y2="15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+      <button class="vc-btn va-fs"    aria-label="Fullscreen">
+        <svg class="ic-fs"  viewBox="0 0 24 24" fill="none"><path d="M8 3H5a2 2 0 00-2 2v3M16 3h3a2 2 0 012 2v3M21 16v3a2 2 0 01-2 2h-3M8 21H5a2 2 0 01-2-2v-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <svg class="ic-exit-fs" viewBox="0 0 24 24" fill="none" style="display:none"><path d="M3 8V5a2 2 0 012-2h3M16 3h3a2 2 0 012 2v3M21 16v3a2 2 0 01-2 2h-3M8 21H5a2 2 0 01-2-2v-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
     <div class="vid-accent-text">
       <span class="label" style="color:var(--g60)">The Movement</span>
       <h3>500 People. One City.<br /><em>Every Saturday.</em></h3>

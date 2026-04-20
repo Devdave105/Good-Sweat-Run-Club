@@ -1,6 +1,6 @@
 /* ================================================================
-   GOOD SWEAT RUN CLUB UYO — script.js v6
-   Videos: 3-state cycle  →  Play (with sound)  →  Mute  →  Pause
+   GOOD SWEAT RUN CLUB UYO — script.js v7
+   Videos: auto-hide controls bar, mute/unmute, play/pause, fullscreen
 ================================================================ */
 (function () {
   'use strict';
@@ -14,24 +14,6 @@
 
   function openModal (bk, m) { bk.classList.add('on');    m.classList.add('on');    lock(); }
   function closeModal(bk, m) { bk.classList.remove('on'); m.classList.remove('on'); free(); }
-
-  /* ─────────────────────────────────────────
-     SVG ICONS
-  ───────────────────────────────────────── */
-  const ICON_PLAY  = `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-    <polygon points="6,3 20,12 6,21" fill="var(--gold)"/>
-  </svg>`;
-
-  const ICON_MUTE  = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M11 5L6 9H2v6h4l5 4V5z" fill="var(--gold)"/>
-    <path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"
-          stroke="var(--gold)" stroke-width="1.8" stroke-linecap="round"/>
-  </svg>`;
-
-  const ICON_PAUSE = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect x="6"  y="4" width="4" height="16" rx="1" fill="var(--gold)"/>
-    <rect x="14" y="4" width="4" height="16" rx="1" fill="var(--gold)"/>
-  </svg>`;
 
   /* ══════════════════════════════════════════
      1. HERO SLIDER
@@ -66,7 +48,6 @@
       cur = (idx + slides.length) % slides.length;
       slides[cur].classList.add('is-active');
       dots[cur].classList.add('is-active');
-
       if (hHead && hSub) {
         const tx = 'opacity .55s ease, transform .55s ease';
         hHead.style.cssText = 'opacity:0;transform:translateY(14px)';
@@ -81,117 +62,229 @@
     }
 
     function next() { goTo(cur + 1); }
-    function startTimer() { timer = setInterval(next, 5800); }
-    function resetTimer() { clearInterval(timer); startTimer(); }
+    function start() { timer = setInterval(next, 5800); }
+    function reset() { clearInterval(timer); start(); }
 
-    dots.forEach((d, i) => d.addEventListener('click', () => { goTo(i); resetTimer(); }));
+    dots.forEach((d, i) => d.addEventListener('click', () => { goTo(i); reset(); }));
     document.addEventListener('keydown', e => {
-      if (e.key === 'ArrowRight') { next(); resetTimer(); }
-      if (e.key === 'ArrowLeft')  { goTo(cur - 1); resetTimer(); }
+      if (e.key === 'ArrowRight') { next(); reset(); }
+      if (e.key === 'ArrowLeft')  { goTo(cur - 1); reset(); }
     });
-
     const hero = $('.hero');
     if (hero) {
       let sx = 0;
       hero.addEventListener('touchstart', e => { sx = e.touches[0].clientX; }, { passive: true });
       hero.addEventListener('touchend', e => {
         const dx = e.changedTouches[0].clientX - sx;
-        if (Math.abs(dx) > 44) { dx < 0 ? next() : goTo(cur - 1); resetTimer(); }
+        if (Math.abs(dx) > 44) { dx < 0 ? next() : goTo(cur - 1); reset(); }
       });
     }
-
-    startTimer();
+    start();
   }
 
   /* ══════════════════════════════════════════
-     2. VIDEOS — 3-state cycle per button
-     ┌──────────────────────────────────────┐
-     │  State 0 (PAUSED/MUTED)              │
-     │    Button shows: PLAY icon           │
-     │    Click → play with sound → State 1 │
-     ├──────────────────────────────────────┤
-     │  State 1 (PLAYING + SOUND)           │
-     │    Button shows: MUTE icon           │
-     │    Click → mute, keep playing        │
-     │                         → State 2    │
-     ├──────────────────────────────────────┤
-     │  State 2 (PLAYING + MUTED)           │
-     │    Button shows: PAUSE icon          │
-     │    Click → pause + mute  → State 0   │
-     └──────────────────────────────────────┘
+     2. VIDEOS
+     ─ Controls bar auto-hides after 3s idle
+     ─ Shows on mouse move / tap over container
+     ─ Play/Pause button
+     ─ Mute/Unmute button
+     ─ Fullscreen button (native Fullscreen API)
+     ─ Videos start muted + looping in background
+     ─ Only one video plays with sound at a time
   ══════════════════════════════════════════ */
   function initVideos() {
 
-    const pairs = [
-      { b: '.vbp', v: '.vid-break video'  },
-      { b: '.vvp', v: '.vol-vid'          },
-      { b: '.gvp', v: '.g-vid-item video' },
-      { b: '.vap', v: '.vid-accent video' },
+    // Each video config: container, video element, controls bar, buttons
+    const vids = [
+      {
+        wrap : '.vid-break-inner',
+        vid  : '.vid-break video',
+        bar  : '.vb-bar',
+        play : '.vb-play',
+        mute : '.vb-mute',
+        fs   : '.vb-fs',
+      },
+      {
+        wrap : '.vol-vid-wrap',
+        vid  : '.vol-vid',
+        bar  : '.vv-bar',
+        play : '.vv-play',
+        mute : '.vv-mute',
+        fs   : '.vv-fs',
+      },
+      {
+        wrap : '.g-vid-item',
+        vid  : '.g-vid-item video',
+        bar  : '.gv-bar',
+        play : '.gv-play',
+        mute : '.gv-mute',
+        fs   : '.gv-fs',
+      },
+      {
+        wrap : '.vid-accent-inner',
+        vid  : '.vid-accent video',
+        bar  : '.va-bar',
+        play : '.va-play',
+        mute : '.va-mute',
+        fs   : '.va-fs',
+      },
     ];
 
-    pairs.forEach(({ b, v }) => {
-      const btn = $(b);
-      const vid = $(v);
-      if (!btn || !vid) return;
+    // Resolve all elements
+    const instances = vids.map(cfg => ({
+      wrap : $(cfg.wrap),
+      vid  : $(cfg.vid),
+      bar  : $(cfg.bar),
+      play : $(cfg.play),
+      mute : $(cfg.mute),
+      fs   : $(cfg.fs),
+    })).filter(i => i.vid && i.bar);
 
-      // Muted ambient loop on page load
-      vid.muted = true;
-      vid.loop  = true;
-      vid.play().catch(() => {});
-
-      // Set initial icon
-      btn.innerHTML = ICON_PLAY;
-
-      btn.addEventListener('click', () => {
-        const playing = !vid.paused;
-        const muted   = vid.muted;
-
-        if (!playing) {
-          /* ── STATE 0 → STATE 1: play with sound ── */
-          muteAllOthers(vid, btn);
-          vid.muted = false;
-          vid.play().catch(() => {
-            // Autoplay blocked — play muted instead, stay at state 2
-            vid.muted = true;
-            vid.play().catch(() => {});
-            btn.innerHTML = ICON_PAUSE;
-          });
-          btn.innerHTML = ICON_MUTE;
-
-        } else if (playing && !muted) {
-          /* ── STATE 1 → STATE 2: mute, keep playing ── */
-          vid.muted = true;
-          btn.innerHTML = ICON_PAUSE;
-
-        } else {
-          /* ── STATE 2 → STATE 0: pause and mute ── */
-          vid.pause();
-          vid.muted = true;
-          btn.innerHTML = ICON_PLAY;
-        }
-      });
-
-      // If video ends naturally, reset to state 0
-      vid.addEventListener('ended', () => {
-        vid.muted = true;
-        btn.innerHTML = ICON_PLAY;
-      });
+    /* ── Start all muted ambient loops ── */
+    instances.forEach(i => {
+      i.vid.muted = true;
+      i.vid.loop  = true;
+      i.vid.play().catch(() => {});
+      syncIcons(i);
     });
 
-    /* Mute all other videos and reset their buttons to PLAY icon */
-    function muteAllOthers(currentVid, currentBtn) {
-      pairs.forEach(({ b, v }) => {
-        const otherBtn = $(b);
-        const otherVid = $(v);
-        if (!otherBtn || !otherVid || otherVid === currentVid) return;
-        otherVid.muted = true;
-        if (!otherVid.paused) {
-          // Keep them looping silently in background
-          otherBtn.innerHTML = ICON_PAUSE;
-        } else {
-          otherBtn.innerHTML = ICON_PLAY;
-        }
+    /* ── Wire up each instance ── */
+    instances.forEach(inst => {
+      const { wrap, vid, bar, play, mute, fs } = inst;
+
+      /* ── Auto-hide controls bar ── */
+      let hideTimer;
+      function showBar() {
+        bar.classList.add('visible');
+        clearTimeout(hideTimer);
+        hideTimer = setTimeout(() => bar.classList.remove('visible'), 3000);
+      }
+      function cancelHide() {
+        clearTimeout(hideTimer);
+        bar.classList.add('visible');
+      }
+      function scheduleHide() {
+        clearTimeout(hideTimer);
+        hideTimer = setTimeout(() => bar.classList.remove('visible'), 3000);
+      }
+
+      // Mouse move over container
+      if (wrap) {
+        wrap.addEventListener('mousemove',  showBar);
+        wrap.addEventListener('mouseleave', () => {
+          hideTimer = setTimeout(() => bar.classList.remove('visible'), 1200);
+        });
+      }
+      // Tap on video for touch devices
+      vid.addEventListener('click', showBar);
+
+      // Keep bar visible while hovering the bar itself
+      bar.addEventListener('mouseenter', cancelHide);
+      bar.addEventListener('mouseleave', scheduleHide);
+
+      /* ── PLAY / PAUSE button ── */
+      if (play) {
+        play.addEventListener('click', e => {
+          e.stopPropagation();
+          if (vid.paused) {
+            // Start this video with sound, mute all others
+            muteAllOthers(inst);
+            vid.muted = false;
+            vid.play().catch(() => { vid.muted = true; vid.play().catch(() => {}); });
+          } else {
+            vid.pause();
+          }
+          syncIcons(inst);
+          showBar();
+        });
+      }
+
+      /* ── MUTE / UNMUTE button ── */
+      if (mute) {
+        mute.addEventListener('click', e => {
+          e.stopPropagation();
+          if (vid.muted) {
+            // Unmuting — mute all others first
+            muteAllOthers(inst);
+            vid.muted = false;
+            if (vid.paused) {
+              vid.play().catch(() => { vid.muted = true; });
+            }
+          } else {
+            vid.muted = true;
+          }
+          syncIcons(inst);
+          showBar();
+        });
+      }
+
+      /* ── FULLSCREEN button ── */
+      if (fs) {
+        fs.addEventListener('click', e => {
+          e.stopPropagation();
+          const el = wrap || vid;
+          if (!document.fullscreenElement) {
+            (el.requestFullscreen   ||
+             el.webkitRequestFullscreen ||
+             el.mozRequestFullScreen).call(el).catch(() => {});
+          } else {
+            (document.exitFullscreen   ||
+             document.webkitExitFullscreen ||
+             document.mozCancelFullScreen).call(document);
+          }
+          showBar();
+        });
+      }
+
+      /* ── Sync icons on any state change ── */
+      vid.addEventListener('play',   () => syncIcons(inst));
+      vid.addEventListener('pause',  () => syncIcons(inst));
+      vid.addEventListener('volumechange', () => syncIcons(inst));
+      vid.addEventListener('ended',  () => {
+        vid.muted = true;
+        syncIcons(inst);
       });
+
+      /* ── Fullscreen icon toggle ── */
+      document.addEventListener('fullscreenchange',        () => syncFsIcon(inst));
+      document.addEventListener('webkitfullscreenchange',  () => syncFsIcon(inst));
+    });
+
+    /* ── Mute all other instances ── */
+    function muteAllOthers(current) {
+      instances.forEach(i => {
+        if (i === current) return;
+        i.vid.muted = true;
+        syncIcons(i);
+      });
+    }
+
+    /* ── Sync play/pause and mute icons ── */
+    function syncIcons(inst) {
+      const { vid, play, mute } = inst;
+      if (play) {
+        const iPlay  = play.querySelector('.ic-play');
+        const iPause = play.querySelector('.ic-pause');
+        if (iPlay)  iPlay.style.display  = vid.paused ? '' : 'none';
+        if (iPause) iPause.style.display = vid.paused ? 'none' : '';
+      }
+      if (mute) {
+        const iSnd   = mute.querySelector('.ic-snd');
+        const iMuted = mute.querySelector('.ic-muted');
+        if (iSnd)   iSnd.style.display   = vid.muted ? 'none' : '';
+        if (iMuted) iMuted.style.display = vid.muted ? '' : 'none';
+      }
+    }
+
+    /* ── Sync fullscreen icon ── */
+    function syncFsIcon(inst) {
+      const { fs } = inst;
+      if (!fs) return;
+      const iFs     = fs.querySelector('.ic-fs');
+      const iExitFs = fs.querySelector('.ic-exit-fs');
+      const inFs    = !!document.fullscreenElement;
+      if (iFs)     iFs.style.display     = inFs ? 'none' : '';
+      if (iExitFs) iExitFs.style.display = inFs ? '' : 'none';
     }
   }
 
@@ -424,9 +517,9 @@
       if (cont) cont.disabled = true;
     };
 
-    openBtn && openBtn.addEventListener('click', ()  => openModal(bk, modal));
-    closeB  && closeB.addEventListener ('click', ()  => { closeModal(bk, modal); reset(); });
-    bk.addEventListener('click', ()                  => { closeModal(bk, modal); reset(); });
+    openBtn && openBtn.addEventListener('click', () => openModal(bk, modal));
+    closeB  && closeB.addEventListener('click',  () => { closeModal(bk, modal); reset(); });
+    bk.addEventListener('click', () => { closeModal(bk, modal); reset(); });
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape' && modal.classList.contains('on')) { closeModal(bk, modal); reset(); }
     });
@@ -450,7 +543,7 @@
     const open  = () => openModal(bk, modal);
     const close = () => closeModal(bk, modal);
 
-    setTimeout(open, 180000); // 3 minutes
+    setTimeout(open, 180000);
 
     closeB && closeB.addEventListener('click', close);
     skip   && skip.addEventListener  ('click', close);
