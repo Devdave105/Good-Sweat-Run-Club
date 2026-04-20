@@ -1,6 +1,6 @@
 /* ================================================================
-   GOOD SWEAT RUN CLUB UYO — script.js v5
-   Fixed: videos load immediately with real src, clean play/pause
+   GOOD SWEAT RUN CLUB UYO — script.js v6
+   Videos: 3-state cycle  →  Play (with sound)  →  Mute  →  Pause
 ================================================================ */
 (function () {
   'use strict';
@@ -9,11 +9,29 @@
   const $    = (s, c) => (c || document).querySelector(s);
   const $$   = (s, c) => [...(c || document).querySelectorAll(s)];
   const wa   = msg => `https://wa.me/${WA}?text=${encodeURIComponent(msg)}`;
-  const lock = () => (document.body.style.overflow = 'hidden');
-  const free = () => (document.body.style.overflow = '');
+  const lock = () => { document.body.style.overflow = 'hidden'; };
+  const free = () => { document.body.style.overflow = ''; };
 
-  function openModal (bk, m) { bk.classList.add('on'); m.classList.add('on'); lock(); }
+  function openModal (bk, m) { bk.classList.add('on');    m.classList.add('on');    lock(); }
   function closeModal(bk, m) { bk.classList.remove('on'); m.classList.remove('on'); free(); }
+
+  /* ─────────────────────────────────────────
+     SVG ICONS
+  ───────────────────────────────────────── */
+  const ICON_PLAY  = `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <polygon points="6,3 20,12 6,21" fill="var(--gold)"/>
+  </svg>`;
+
+  const ICON_MUTE  = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M11 5L6 9H2v6h4l5 4V5z" fill="var(--gold)"/>
+    <path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"
+          stroke="var(--gold)" stroke-width="1.8" stroke-linecap="round"/>
+  </svg>`;
+
+  const ICON_PAUSE = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="6"  y="4" width="4" height="16" rx="1" fill="var(--gold)"/>
+    <rect x="14" y="4" width="4" height="16" rx="1" fill="var(--gold)"/>
+  </svg>`;
 
   /* ══════════════════════════════════════════
      1. HERO SLIDER
@@ -26,12 +44,18 @@
     if (!slides.length) return;
 
     const copy = [
-      { h: 'Run With Purpose.<br /><em>Grow With Community.</em>',
-        s: 'Join 500+ runners in Uyo building discipline, health, and real connection — one Saturday at a time.' },
-      { h: 'Every Step Forward<br /><em>Is a Victory.</em>',
-        s: 'Beginners welcome. Advanced runners thrive. Good Sweat meets you where you are — and pushes you further.' },
-      { h: 'Uyo Wakes at 6 AM.<br /><em>So Should You.</em>',
-        s: 'Four locations. One community. Every Saturday we hit the streets and remind ourselves what we are made of.' }
+      {
+        h: 'Run With Purpose.<br /><em>Grow With Community.</em>',
+        s: 'Join 500+ runners in Uyo building discipline, health, and real connection — one Saturday at a time.'
+      },
+      {
+        h: 'Every Step Forward<br /><em>Is a Victory.</em>',
+        s: 'Beginners welcome. Advanced runners thrive. Good Sweat meets you where you are — and pushes you further.'
+      },
+      {
+        h: 'Uyo Wakes at 6 AM.<br /><em>So Should You.</em>',
+        s: 'Four locations. One community. Every Saturday we hit the streets and remind ourselves what we are made of.'
+      }
     ];
 
     let cur = 0, timer;
@@ -42,6 +66,7 @@
       cur = (idx + slides.length) % slides.length;
       slides[cur].classList.add('is-active');
       dots[cur].classList.add('is-active');
+
       if (hHead && hSub) {
         const tx = 'opacity .55s ease, transform .55s ease';
         hHead.style.cssText = 'opacity:0;transform:translateY(14px)';
@@ -69,27 +94,39 @@
     if (hero) {
       let sx = 0;
       hero.addEventListener('touchstart', e => { sx = e.touches[0].clientX; }, { passive: true });
-      hero.addEventListener('touchend',   e => {
+      hero.addEventListener('touchend', e => {
         const dx = e.changedTouches[0].clientX - sx;
         if (Math.abs(dx) > 44) { dx < 0 ? next() : goTo(cur - 1); resetTimer(); }
       });
     }
+
     startTimer();
   }
 
   /* ══════════════════════════════════════════
-     2. VIDEOS  — unified, bulletproof system
-     Each video has a play button overlay.
-     Click → loads (if needed) → unmutes → plays.
-     Click again → pauses. Only one unmuted at a time.
+     2. VIDEOS — 3-state cycle per button
+     ┌──────────────────────────────────────┐
+     │  State 0 (PAUSED/MUTED)              │
+     │    Button shows: PLAY icon           │
+     │    Click → play with sound → State 1 │
+     ├──────────────────────────────────────┤
+     │  State 1 (PLAYING + SOUND)           │
+     │    Button shows: MUTE icon           │
+     │    Click → mute, keep playing        │
+     │                         → State 2    │
+     ├──────────────────────────────────────┤
+     │  State 2 (PLAYING + MUTED)           │
+     │    Button shows: PAUSE icon          │
+     │    Click → pause + mute  → State 0   │
+     └──────────────────────────────────────┘
   ══════════════════════════════════════════ */
   function initVideos() {
-    // Map of: { btn selector, video selector }
+
     const pairs = [
-      { b: '.vbp', v: '.vid-break video'   },   // Video 1: cinematic break
-      { b: '.vvp', v: '.vol-vid'           },   // Video 2: volunteer section
-      { b: '.gvp', v: '.g-vid-item video'  },   // Video 3: gallery inline
-      { b: '.vap', v: '.vid-accent video'  },   // Video 4: accent between sections
+      { b: '.vbp', v: '.vid-break video'  },
+      { b: '.vvp', v: '.vol-vid'          },
+      { b: '.gvp', v: '.g-vid-item video' },
+      { b: '.vap', v: '.vid-accent video' },
     ];
 
     pairs.forEach(({ b, v }) => {
@@ -97,67 +134,64 @@
       const vid = $(v);
       if (!btn || !vid) return;
 
-      // Make sure the video is properly loaded
-      // (src is already set in HTML, preload=metadata)
-      // Attempt silent autoplay muted in background for ambient feel
+      // Muted ambient loop on page load
       vid.muted = true;
-      vid.play().catch(() => {
-        // Autoplay blocked — video will play on user click instead
-      });
+      vid.loop  = true;
+      vid.play().catch(() => {});
+
+      // Set initial icon
+      btn.innerHTML = ICON_PLAY;
 
       btn.addEventListener('click', () => {
-        const isPlaying = !vid.paused && !vid.ended;
+        const playing = !vid.paused;
+        const muted   = vid.muted;
 
-        if (isPlaying && !vid.muted) {
-          // Already playing with sound — pause it
-          vid.pause();
-          showBtn(btn);
-        } else if (isPlaying && vid.muted) {
-          // Playing silently (ambient) — unmute it, show as "playing"
-          pauseAllOthers(vid);
+        if (!playing) {
+          /* ── STATE 0 → STATE 1: play with sound ── */
+          muteAllOthers(vid, btn);
           vid.muted = false;
-          hideBtn(btn);
-        } else {
-          // Paused — start playing with sound
-          pauseAllOthers(vid);
-          vid.muted = false;
-          vid.play().then(() => {
-            hideBtn(btn);
-          }).catch(() => {
-            // If play is blocked, try muted first
+          vid.play().catch(() => {
+            // Autoplay blocked — play muted instead, stay at state 2
             vid.muted = true;
             vid.play().catch(() => {});
-            hideBtn(btn);
+            btn.innerHTML = ICON_PAUSE;
           });
-        }
+          btn.innerHTML = ICON_MUTE;
 
-        // When video ends or is paused externally — show button again
-        vid.onpause = () => { showBtn(btn); };
-        vid.onended = () => { showBtn(btn); vid.muted = true; };
+        } else if (playing && !muted) {
+          /* ── STATE 1 → STATE 2: mute, keep playing ── */
+          vid.muted = true;
+          btn.innerHTML = ICON_PAUSE;
+
+        } else {
+          /* ── STATE 2 → STATE 0: pause and mute ── */
+          vid.pause();
+          vid.muted = true;
+          btn.innerHTML = ICON_PLAY;
+        }
+      });
+
+      // If video ends naturally, reset to state 0
+      vid.addEventListener('ended', () => {
+        vid.muted = true;
+        btn.innerHTML = ICON_PLAY;
       });
     });
 
-    function pauseAllOthers(currentVid) {
-      $$('video').forEach(v => {
-        if (v !== currentVid) {
-          v.pause();
-          v.muted = true;
+    /* Mute all other videos and reset their buttons to PLAY icon */
+    function muteAllOthers(currentVid, currentBtn) {
+      pairs.forEach(({ b, v }) => {
+        const otherBtn = $(b);
+        const otherVid = $(v);
+        if (!otherBtn || !otherVid || otherVid === currentVid) return;
+        otherVid.muted = true;
+        if (!otherVid.paused) {
+          // Keep them looping silently in background
+          otherBtn.innerHTML = ICON_PAUSE;
+        } else {
+          otherBtn.innerHTML = ICON_PLAY;
         }
       });
-      // Reset all other buttons to visible
-      $$('.vid-play-btn').forEach(b => showBtn(b));
-    }
-
-    function hideBtn(btn) {
-      btn.style.opacity = '0';
-      btn.style.pointerEvents = 'none';
-      btn.style.transform = 'translate(-50%,-50%) scale(.8)';
-    }
-
-    function showBtn(btn) {
-      btn.style.opacity = '1';
-      btn.style.pointerEvents = 'all';
-      btn.style.transform = 'translate(-50%,-50%) scale(1)';
     }
   }
 
@@ -239,10 +273,7 @@
     if (!els.length) return;
     const io = new IntersectionObserver(entries => {
       entries.forEach(en => {
-        if (en.isIntersecting) {
-          en.target.classList.add('in');
-          io.unobserve(en.target);
-        }
+        if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
       });
     }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
     els.forEach(el => io.observe(el));
@@ -266,12 +297,12 @@
   function initTicker() {
     const row = $('#tickerRow');
     if (!row) return;
-    row.addEventListener('mouseenter', () => (row.style.animationPlayState = 'paused'));
-    row.addEventListener('mouseleave', () => (row.style.animationPlayState = 'running'));
+    row.addEventListener('mouseenter', () => { row.style.animationPlayState = 'paused'; });
+    row.addEventListener('mouseleave', () => { row.style.animationPlayState = 'running'; });
   }
 
   /* ══════════════════════════════════════════
-     9. LOCATION CARDS — 3 shown, CTA shows 4th
+     9. LOCATION CARDS — 3 shown, CTA reveals 4th
   ══════════════════════════════════════════ */
   function initLocCards() {
     const btn    = $('#seeAllBtn');
@@ -304,7 +335,7 @@
     const form     = $('#locForm');
     if (!overlay) return;
 
-    const open  = loc => {
+    const open = loc => {
       if (nameSpan) nameSpan.textContent = loc;
       if (hiddenIn) hiddenIn.value = loc;
       overlay.classList.add('on');
@@ -393,13 +424,13 @@
       if (cont) cont.disabled = true;
     };
 
-    openBtn && openBtn.addEventListener('click', () => openModal(bk, modal));
-    closeB  && closeB.addEventListener('click',  () => { closeModal(bk, modal); reset(); });
-    bk.addEventListener('click', () => { closeModal(bk, modal); reset(); });
+    openBtn && openBtn.addEventListener('click', ()  => openModal(bk, modal));
+    closeB  && closeB.addEventListener ('click', ()  => { closeModal(bk, modal); reset(); });
+    bk.addEventListener('click', ()                  => { closeModal(bk, modal); reset(); });
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape' && modal.classList.contains('on')) { closeModal(bk, modal); reset(); }
     });
-    chk  && cont && chk.addEventListener('change', () => (cont.disabled = !chk.checked));
+    chk  && cont && chk.addEventListener('change', () => { cont.disabled = !chk.checked; });
     cont && cont.addEventListener('click', () => {
       if (!cont.disabled) { closeModal(bk, modal); reset(); }
     });
@@ -407,7 +438,6 @@
 
   /* ══════════════════════════════════════════
      14. WHY SWEAT MODAL — fires after 3 minutes
-         (180,000 ms = 3 min)
   ══════════════════════════════════════════ */
   function initSweatModal() {
     const bk     = $('#swBk');
@@ -420,12 +450,11 @@
     const open  = () => openModal(bk, modal);
     const close = () => closeModal(bk, modal);
 
-    // 3 minutes after page load
-    setTimeout(open, 180000);
+    setTimeout(open, 180000); // 3 minutes
 
     closeB && closeB.addEventListener('click', close);
-    skip   && skip.addEventListener('click',   close);
-    join   && join.addEventListener('click',   close);
+    skip   && skip.addEventListener  ('click', close);
+    join   && join.addEventListener  ('click', close);
     bk.addEventListener('click', close);
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape' && modal.classList.contains('on')) close();
