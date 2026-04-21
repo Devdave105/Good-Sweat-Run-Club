@@ -184,20 +184,36 @@ document.addEventListener('DOMContentLoaded', function () {
   setInterval(updateCountdown, 1000);
 
   /* ===== ANIMATED COUNTERS ===== */
-  function animateCounter(el) {
-    const target = parseInt(el.getAttribute('data-target'), 10);
-    const duration = 2000;
-    const step = target / (duration / 16);
-    let current = 0;
+  function animateCounter(el, loop) {
+    const target   = parseInt(el.getAttribute('data-target'), 10);
+    const duration = 2200;
+    const steps    = Math.round(duration / 16);
+    let current    = 0;
+    let step       = 0;
 
-    const timer = setInterval(function () {
-      current += step;
-      if (current >= target) {
-        current = target;
-        clearInterval(timer);
+    function tick() {
+      step++;
+      // Ease-out curve
+      const progress = 1 - Math.pow(1 - step / steps, 3);
+      current = Math.floor(progress * target);
+      el.textContent = current;
+
+      if (step < steps) {
+        requestAnimationFrame(tick);
+      } else {
+        el.textContent = target;
+        // If loop flag, restart after a short pause
+        if (loop) {
+          setTimeout(function () {
+            step = 0; current = 0;
+            el.textContent = 0;
+            requestAnimationFrame(tick);
+          }, 1200);
+        }
       }
-      el.textContent = Math.floor(current);
-    }, 16);
+    }
+
+    requestAnimationFrame(tick);
   }
 
   const counters = document.querySelectorAll('.counter');
@@ -210,13 +226,17 @@ document.addEventListener('DOMContentLoaded', function () {
     const rect = heroBottom.getBoundingClientRect();
     if (rect.top < window.innerHeight) {
       countersStarted = true;
-      counters.forEach(c => animateCounter(c));
+      counters.forEach(function(c) {
+        // Only the 500 runners counter loops continuously
+        const shouldLoop = parseInt(c.getAttribute('data-target'), 10) === 500;
+        animateCounter(c, shouldLoop);
+      });
       window.removeEventListener('scroll', checkCounters);
     }
   }
 
   window.addEventListener('scroll', checkCounters, { passive: true });
-  setTimeout(checkCounters, 800); // Check on load
+  setTimeout(checkCounters, 800);
 
   /* ===== FAQ ACCORDION ===== */
   const faqItems   = document.querySelectorAll('.faq-item:not(.faq-hidden)');
@@ -255,7 +275,53 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  /* ===== LIGHTBOX ===== */
+  /* ===== LOCATIONS SHOW MORE ===== */
+  const locShowBtn  = document.getElementById('loc-show-btn');
+  const locBtnText  = document.getElementById('loc-btn-text');
+  const locBtnIcon  = document.getElementById('loc-btn-icon');
+  const hiddenCards = document.querySelectorAll('.loc-hidden');
+  let locsVisible   = false;
+
+  if (locShowBtn) {
+    locShowBtn.addEventListener('click', function () {
+      locsVisible = !locsVisible;
+
+      hiddenCards.forEach(function (card, i) {
+        if (locsVisible) {
+          card.style.display = 'block';
+          // Trigger AOS re-init on newly visible cards
+          setTimeout(function () {
+            card.classList.add('aos-animate');
+          }, i * 80);
+        } else {
+          card.style.display = 'none';
+          card.classList.remove('aos-animate');
+        }
+      });
+
+      this.classList.toggle('open', locsVisible);
+      locBtnText.textContent = locsVisible ? 'Show Less Locations' : 'View All 8 Locations';
+    });
+  }
+
+  /* ===== BACK TO TOP ===== */
+  const backToTopBtn = document.getElementById('back-to-top');
+
+  window.addEventListener('scroll', function () {
+    if (window.scrollY > 500) {
+      backToTopBtn.classList.add('visible');
+    } else {
+      backToTopBtn.classList.remove('visible');
+    }
+  }, { passive: true });
+
+  if (backToTopBtn) {
+    backToTopBtn.addEventListener('click', function () {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+
   const lightbox      = document.getElementById('lightbox');
   const lightboxImg   = document.getElementById('lightbox-img');
   const lightboxClose = document.getElementById('lightbox-close');
@@ -378,22 +444,30 @@ document.addEventListener('DOMContentLoaded', function () {
     setTimeout(() => { if (err.parentNode) err.remove(); }, 3500);
   }
 
-  /* ===== REGISTRATION / VOLUNTEER EXTERNAL LINKS ===== */
-  // Replace with actual URL — kept private from source code
-  const REGISTER_URL  = 'https://forms.gle/goodsweat'; // Placeholder - update with real URL
-  const VOLUNTEER_URL = 'https://forms.gle/goodsweat-volunteer'; // Placeholder
+  /* ===== EXTERNAL LINKS — REPLACE THESE WITH YOUR REAL URLS ===== */
+  // ---------------------------------------------------------------
+  // STEP 1: Replace REGISTER_URL with your Next Run registration link
+  // STEP 2: Replace VOLUNTEER_URL with your volunteer sign-up link
+  // The actual URLs are never visible in the page source — only triggered on button click
+  // ---------------------------------------------------------------
+  const REGISTER_URL  = 'https://event.getbookt.io/good-sweat-run-club-uyo-2168?utm_source=ig&utm_medium=social&utm_content=link_in_bio&fbclid=PAdGRleARRh15leHRuA2FlbQIxMQBzcnRjBmFwcF9pZA8xMjQwMjQ1NzQyODc0MTQAAaeFJWrCM4-8Z0fpve7YvMcEuZmsR_RovGV7GszYsepezTHYLQYhzdvdvKJ_jg_aem_5TB49Ka0EJDdUYdUeHBesg';  // e.g. https://forms.gle/xxxxx
+  const VOLUNTEER_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSfbjQI-0tpWXdX1_9E77yKEJXG0-IgodTBLxLtu7K_LyGjUSg/viewform?fbclid=PAdGRleARRiAlleHRuA2FlbQIxMQBzcnRjBmFwcF9pZA8xMjQwMjQ1NzQyODc0MTQAAaciAmUalF1B6H7-nqxX16EP7KtD-hzjCQW8WXnjuiPWIMkQ6g8oD35CTcZLyA_aem_GMecoNHP5Nd9EoVMRguvmw';        // e.g. https://forms.gle/yyyyy
 
-  document.querySelectorAll('.register-btn').forEach(btn => {
+  document.querySelectorAll('.register-btn').forEach(function(btn) {
     btn.addEventListener('click', function (e) {
       e.preventDefault();
-      window.open(REGISTER_URL, '_blank', 'noopener,noreferrer');
+      if (REGISTER_URL && !REGISTER_URL.startsWith('YOUR_')) {
+        window.open(REGISTER_URL, '_blank', 'noopener,noreferrer');
+      }
     });
   });
 
-  document.querySelectorAll('.volunteer-btn').forEach(btn => {
+  document.querySelectorAll('.volunteer-btn').forEach(function(btn) {
     btn.addEventListener('click', function (e) {
       e.preventDefault();
-      window.open(VOLUNTEER_URL, '_blank', 'noopener,noreferrer');
+      if (VOLUNTEER_URL && !VOLUNTEER_URL.startsWith('YOUR_')) {
+        window.open(VOLUNTEER_URL, '_blank', 'noopener,noreferrer');
+      }
     });
   });
 
